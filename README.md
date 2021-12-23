@@ -1,2 +1,2 @@
-# nccu_dbms2021_dmlab
-please take a look at issues
+# assignments is announced in issues
+# DO NOT edit the folder: flask_base 

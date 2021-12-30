@@ -5,12 +5,22 @@ import sqlalchemy as db
 from sqlalchemy import func
 import math
 from view.member_register import member_app
+from view.property_info import pp_info_app
+from view.property_scrap import pp_scrap_app
+from view.property_transfer import pp_trans_app
+from view.purchase_build import pc_build_app
+from view.purchase_info import pc_info_app
 
 
 
 app = Flask(__name__)
 moment = Moment(app)
-app.register_blueprint(member_app, url_prefix="/member")
+app.register_blueprint(member_app)
+app.register_blueprint(pp_info_app)
+app.register_blueprint(pp_scrap_app)
+app.register_blueprint(pp_trans_app)
+app.register_blueprint(pc_build_app)
+app.register_blueprint(pc_info_app)
 
 @app.route('/')
 def index():

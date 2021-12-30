@@ -6,7 +6,8 @@ import math
 
 
 
-member_app = Blueprint('member_app', __name__)
+member_app = Blueprint('member_app', __name__, url_prefix="/member")
+
 
 @member_app.route('/')
 def index():

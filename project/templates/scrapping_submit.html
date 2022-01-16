@@ -16,10 +16,10 @@
         <div class="col-10">
             <div class="card ">
                 <div class="card-body">
-                    <form method="POST" action="/data-edit">
+                    <form method="POST" action="/pp_scrap/Scrapping_submit">
                         <div class="mb-3">
-                            <label for="ScrappingListID" class="form-label">Scrapping List ID</label>
-                            <input type="text" name="ScrappingListID" class="form-control" id="ScrappingListID">
+                            <label for="ScrappingList_ID" class="form-label">Scrapping List ID</label>
+                            <input type="text" name="ScrappingList_ID" class="form-control" id="ScrappingList_ID">
                             <!-- <select class="form-select" name="CustomerId"  id="CustomerId" aria-label="Default select example">
                                 {% for id in id_list %}
                                 <option value="{{ id }}">{{ id }}</option>
@@ -27,23 +27,15 @@
                             </select> -->
                         </div>
                         <div class="mb-3">
-                            <label for="ApplicantID" class="form-label">Applicant_ID</label>
+                            <label for="Applicant_ID" class="form-label">Applicant_ID</label>
                             <!-- <input type="text" name="FirstName" class="form-control" id="FirstName"> -->
-                            <select class="form-select" name="ApplicantID"  id="ApplicantID" aria-label="Default select example">
+                            <select class="form-select" name="Applicant_ID"  id="Applicant_ID" aria-label="Default select example">
                                 {% for id in id_list %}
                                 <option value="{{ id }}">{{ id }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="PropertyID" class="form-label">Property_ID</label>
-                            <!-- <input type="text" name="PropertyID" class="form-control" id="PropertyID"> -->
-                            <select class="form-select" name="PropertyID"  id="PropertyID" aria-label="Default select example">
-                                {% for id in id_list_property %}
-                                <option value="{{ id }}">{{ id }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        
                         <div class="mb-3">
                             <label for="Date" class="form-label">Date</label>
                             <!-- <input type="text" name="Date" class="form-control" id="Company"> -->
@@ -56,8 +48,20 @@
                         </div>
                         <div class="mb-3">
                             <label for="Reason" class="form-label">Reason</label>
-                            <textarea class="form-control" name="Reason" id="Reason" rows="3"></textarea>
+                            <textarea class="form-control" name="Reason" id="Reason" rows="1"></textarea>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="PropertyID" class="form-label">Property_ID</label>
+                            <!-- <input type="text" name="Property_ID" class="form-control" id="Property_ID"> -->
+                            <select class="form-select" name="Property_ID"  id="Property_ID" aria-label="Default select example">
+                                {% for id in id_list_property %}
+                                <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+
                         <button type="submit" class="btn btn-primary">Submit</button>
                         <!-- <button type="submit" class="btn btn-primary"> See All Submit</button>
                         <button type="submit" class="btn btn-primary"> Go to Scrapping</button> -->

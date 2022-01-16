@@ -69,20 +69,28 @@ def Scrapping_submit():
             query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
             proxy = connection.execute(query)
             id_list = [idx[0] for idx in proxy.fetchall()]
-            # if request.form['Applicant_ID'] & request.form['Property_ID'] : # 希望至少要填寫名子
-            #     query = db.add(table_ScrappingInfo).values(**{k:request.form[k] for k in request.form.keys()})
-            #     proxy = connection.execute(query)
-            if request.form['ScrappingList_ID']: # 希望至少要填寫名子
-                query = db.update(table_ScrappingInfo).where(table_ScrappingInfo.c.Property_ID == request.form['Property_ID']).values(**{k:request.form[k] for k in request.form.keys()})
+  
+
+            query = db.select(table_Property.c.Property_ID).order_by(table_Property.c.Property_ID)
+            proxy = connection.execute(query)
+            id_list_property = [idx[0] for idx in proxy.fetchall()]
+
+            if request.form['Applicant_ID']: # 希望至少要填寫名子
+                # query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=request.form['Date'],Reason=request.form['Reason'],PropertyManager_ID=None)
+                # proxy = connection.execute(query)
+                query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=None,Reason=request.form['Reason'])
                 proxy = connection.execute(query)
+                query = db.insert(table_ScrappingList).values(ScrappingList_ID=request.form['ScrappingList_ID'],Property_ID=request.form['Property_ID'])
+                proxy = connection.execute(query)
+                # 無法有Date 輸入
             else:
                 raise Exception
         except:
-            return render_template('data_edit.html',
-                                    page_header="edit data",id_list=id_list,status="Failed")
+            return render_template('scrapping_submit.html',
+                                    page_header="edit data",id_list=id_list,id_list_property=id_list_property,status="Failed")
         else:
-            return render_template('data_edit.html',
-                                    page_header="edit data",id_list=id_list,status="Success")
+            return render_template('scrapping_submit.html',
+                                    page_header="edit data",id_list=id_list,id_list_property=id_list_property,status="Success")
         finally:
             # Close connection
             connection.close()
@@ -101,7 +109,7 @@ def Scrapping_submit():
         connection.close()
 
         return render_template('scrapping_submit.html',
-                                page_header="edit data",id_list=id_list,id_list_property=id_list_property)
+                                page_header="Submit data",id_list=id_list,id_list_property=id_list_property)
 
 
 # @pp_scrap_app.route('/Delete')

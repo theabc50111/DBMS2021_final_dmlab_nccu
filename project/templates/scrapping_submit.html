@@ -9,7 +9,7 @@
 <div class="container mt-5">
     <div class="row" id="msg-bar" style="display: {{ 'none' if request.method=='GET' else 'block' }}">
         <div class="alert {{ 'alert-primary' if status=='Success' else 'alert-danger'}} " role="alert">
-            {{ status }} <a>!  Your ScrappingList_ID is {{ScrappingList_ID_GENERATE}}</a>
+            {{ status }} <a>!  Your ScrappingList_ID is{{ScrappingList_ID_GENERATE}}</a>
         </div>
     </div>
     <div class="row justify-content-md-center">
@@ -92,10 +92,10 @@
       </form>
     </li>
   
-    <!-- <li class="page-item"></li>
-      <form action="/pp_scrap/Scrapping_aspect">
+    <li class="page-item"></li>
+      <form action="/pp_scrap/Scrapping_search">
         <button class="btn btn-primary">查詢個別清單報廢之物品</button>
       </form>
-    </li> -->
+    </li>
   </ul>
 {% endblock page_content %}

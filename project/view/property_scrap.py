@@ -102,6 +102,12 @@ def Scrapping_submit():
         id_list = [idx[0] for idx in proxy.fetchall()]
         connection.close()
 
+        connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+        query = db.select(table_Property.c.Property_ID).order_by(table_Property.c.Property_ID)
+        proxy = connection.execute(query)
+        id_list_property = [idx[0] for idx in proxy.fetchall()]
+        connection.close()
+
         return render_template('scrapping_submit.html',
                                 page_header="Submit data",id_list=id_list,id_list_property=id_list_property)
 

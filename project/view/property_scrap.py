@@ -14,7 +14,7 @@ table_name_ScrappingInfo = 'ScrappingInfo'
 table_name_ScrappingList = 'ScrappingList'
 table_name_Property = 'Property'
 table_name_Member='Member'
-engine = db.create_engine(f'sqlite:///{path_to_db}')
+engine = db.create_engine(f'sqlite:///{path_to_db}',native_datetime=True)
 
 # connection  = engine.connect()
 
@@ -25,40 +25,32 @@ table_Property  = db.Table(table_name_Property, metadata, autoload=True, autoloa
 table_Member= db.Table(table_name_Member, metadata, autoload=True, autoload_with=engine)
 
 
-# @pp_scrap_app.route('/')
-# def index(): #show scrappinginfo
-#     # query string
-#     page = int(request.args.get('page') if request.args.get('page') else 1)
-#     each_page = 5
+@pp_scrap_app.route('/')
+def index(): #show scrappinginfo
+    # query string
+    page = int(request.args.get('page') if request.args.get('page') else 1)
+    each_page = 30
 
-# #     # set total pages
-#     connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
-#     query = db.select(func.count()).select_from(table_ScrappingInfo)
-#     proxy = connection.execute(query)
-#     total_pages = math.ceil(proxy.fetchall()[0][0]/each_page) # [0][0] => inorder to get the value
+#     # set total pages
+    connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+    query = db.select(func.count()).select_from(table_ScrappingInfo)
+    proxy = connection.execute(query)
+    total_pages = math.ceil(proxy.fetchall()[0][0]/each_page) # [0][0] => inorder to get the value
 
-#     # fetch data & decided by page
-#     query = db.select(table_ScrappingInfo).limit(each_page).offset((page-1)*each_page)
-#     proxy = connection.execute(query)
-#     results = proxy.fetchall()
-#     print(results[0].keys())
+    # fetch data & decided by page
+    query = db.select(table_ScrappingInfo).limit(each_page).offset((page-1)*each_page)
+    proxy = connection.execute(query)
+    results = proxy.fetchall()
+    print(results[1].keys())
 
-# #     # Close connection
-#     connection.close()
+#     # Close connection
+    connection.close()
     
-    # return render_template('scrapping_table.html',
-    #                        page_header="All Scrapping List",
-    #                        total_pages=total_pages,
-    #                        outputs=results,
-    #                        page=page)
-
-
-
-# @pp_scrap_app.route('/Scrapping_delete')
-# def Scrapping_delete():
-#     return render_template('index.html',
-#                            page_header="property scrap",
-#                            current_time=datetime.utcnow())
+    return render_template('scrapping_table.html',
+                           page_header="All Scrapping List",
+                           total_pages=total_pages,
+                           outputs=results,
+                           page=page)
 
 
 @pp_scrap_app.route('/Scrapping_submit', methods=["GET", "POST"])
@@ -76,10 +68,10 @@ def Scrapping_submit():
             id_list_property = [idx[0] for idx in proxy.fetchall()]
 
             if request.form['Applicant_ID']: # 希望至少要填寫名子
-                # query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=request.form['Date'],Reason=request.form['Reason'],PropertyManager_ID=None)
-                # proxy = connection.execute(query)
-                query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=None,Reason=request.form['Reason'])
+                query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=request.form['Date'],Reason=request.form['Reason'],PropertyManager_ID=None)
                 proxy = connection.execute(query)
+                # query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=None,Reason=request.form['Reason'])
+                # proxy = connection.execute(query)
                 query = db.insert(table_ScrappingList).values(ScrappingList_ID=request.form['ScrappingList_ID'],Property_ID=request.form['Property_ID'])
                 proxy = connection.execute(query)
                 # 無法有Date 輸入

@@ -40,7 +40,6 @@ def member_info_show():
     query = db.select(table_members).limit(each_page).offset((page-1)*each_page)
     proxy = connection.execute(query)
     results = proxy.fetchall()
-    print(results[1].keys())
 
     # Close connection
     connection.close()
@@ -52,11 +51,10 @@ def member_info_show():
                            page=page)
 
 @member_app.route('/edit_info', methods=["GET", "POST"])
-def member_register():
+def member_edit_info():
 
     if request.method=="POST":
         try:
-            print("post to here")
             connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
             query = db.select(table_members.c.Member_ID).order_by(table_members.c.Member_ID)
             proxy = connection.execute(query)
@@ -86,4 +84,36 @@ def member_register():
                                 page_header="edit member info",id_list=id_list)
 
 
+@member_app.route('/register', methods=["GET", "POST"])
+def member_register():
+
+    if request.method=="POST":
+        try:
+            connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+            query = db.select(table_members.c.Member_ID).order_by(table_members.c.Member_ID)
+            proxy = connection.execute(query)
+            id_list = [idx[0] for idx in proxy.fetchall()]
+            if request.form['Name'] and request.form['Member_ID']: # 希望至少要填寫名子
+                query = db.insert(table_members).values(**{k:request.form[k] for k in request.form.keys()})
+                proxy = connection.execute(query)
+            else:
+                raise Exception
+        except:
+            return render_template('member_register.html',
+                                    page_header="register",id_list=id_list,status="Failed")
+        else:
+            return render_template('member_register.html',
+                                    page_header="register",id_list=id_list,status="Success")
+        finally:
+            # Close connection
+            connection.close()
+           
+    if request.method=="GET":
+        connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+        query = db.select(table_members.c.Member_ID).order_by(table_members.c.Member_ID)
+        proxy = connection.execute(query)
+        id_list = [idx[0] for idx in proxy.fetchall()]
+        connection.close()
+        return render_template('member_register.html',
+                                page_header="register",id_list=id_list)
 

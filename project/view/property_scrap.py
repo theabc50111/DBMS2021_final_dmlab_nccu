@@ -207,7 +207,7 @@ def Scrapping_search():
         else:
             return render_template('scrapping_search.html',
                     page_header="查詢報廢清單物品",
-                    total_pages=total_pages,
+                    total_pages=total_pages,id_list_Scrapping_list=id_list_Scrapping_list,
                     outputs=results,status="Success")
         finally:
             # Close connection
@@ -216,7 +216,7 @@ def Scrapping_search():
     if request.method=="GET":
 
         connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
-        query =  db.select(table_ScrappingInfo.c.ScrappingList_ID).where(table_ScrappingInfo.c.PropertyManager_ID==None).order_by(table_ScrappingInfo.c.ScrappingList_ID)
+        query =  db.select(table_ScrappingInfo.c.ScrappingList_ID).order_by(table_ScrappingInfo.c.ScrappingList_ID)
         proxy = connection.execute(query)
         id_list_Scrapping_list = [idx[0] for idx in proxy.fetchall()]
         connection.close()

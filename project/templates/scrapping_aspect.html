@@ -1,0 +1,77 @@
+{% extends "parts/base.html" %}
+{% block title %}data-list{% endblock title %}
+
+
+{% block page_content %}
+{{ super() }}
+
+
+<div class="container mt-5">
+    <div class="row" id="msg-bar" style="display: {{ 'none' if request.method=='GET' else 'block' }}">
+        <div class="alert {{ 'alert-primary' if status=='Success' else 'alert-danger'}} " role="alert">
+            {{ status }}
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-10">
+            <div class="card ">
+                <div class="card-body">
+                    <form method="POST" action="/pp_scrap/Scrapping_aspect">
+                        <div class="mb-3">
+                            <label for="ScrappingList_ID" class="form-label">Scrapping List ID</label>
+                            <!-- <input type="text" name="ScrappingList_ID" class="form-control" id="ScrappingList_ID"> -->
+                            <select class="form-select" name="ScrappingList_ID"  id="ScrappingList_ID" aria-label="Default select example">
+                                {% for id in id_list_Scrapping_list %}
+                                <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="PropertyManager_ID" class="form-label">PropertyManager_ID</label>
+                            <!-- <input type="text" name="FirstName" class="form-control" id="FirstName"> -->
+                            <select class="form-select" name="PropertyManager_ID"  id="PropertyManager_ID" aria-label="Default select example">
+                                {% for id in id_list %}
+                                <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <!-- <button type="submit" class="btn btn-primary"> See All Submit</button>
+                        <button type="submit" class="btn btn-primary"> Go to Scrapping</button> -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul class="pagination  justify-content-center mt-5">
+    <!-- <li class="page-item">
+      <form action="/pp_scrap/Scrapping_aspect">
+        <button class="btn btn-primary">核准財物報廢</button>
+      </form>
+    </li>
+   -->
+  
+  
+    <li class="page-item">
+      <form action="/pp_scrap/Scrapping_submit">
+        <button class="btn btn-primary">提交財物報廢清單</button>
+      </form>
+    </li>
+  
+    <li class="page-item"></li>
+      <form action="/pp_scrap/">
+        <button class="btn btn-primary">返回報廢功能首頁</button>
+      </form>
+    </li>
+  
+    <!-- <li class="page-item"></li>
+      <form action="/pp_scrap/Scrapping_aspect">
+        <button class="btn btn-primary">查詢個別清單報廢之物品</button>
+      </form>
+    </li> -->
+  </ul>
+{% endblock page_content %}

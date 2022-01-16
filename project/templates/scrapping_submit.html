@@ -9,7 +9,7 @@
 <div class="container mt-5">
     <div class="row" id="msg-bar" style="display: {{ 'none' if request.method=='GET' else 'block' }}">
         <div class="alert {{ 'alert-primary' if status=='Success' else 'alert-danger'}} " role="alert">
-            {{ status }}
+            {{ status }} <a>!  Your ScrappingList_ID is {{ScrappingList_ID_GENERATE}}</a>
         </div>
     </div>
     <div class="row justify-content-md-center">

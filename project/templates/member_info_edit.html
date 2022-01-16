@@ -1,0 +1,44 @@
+{% extends "parts/base.html" %}
+{% block title %}member-edit-info{% endblock title %}
+
+
+{% block page_content %}
+{{ super() }}
+
+
+<div class="container mt-5">
+    <div class="row" id="msg-bar" style="display: {{ 'block' if request.method=='POST' else 'none' }}">
+        <div class="alert {{ 'alert-primary' if status=='Success' else 'alert-danger'}} " role="alert">
+            {{ status }}
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-10">
+            <div class="card ">
+                <div class="card-body">
+                    <form method="POST" action="/member/edit_info">
+                        <div class="mb-3">
+                            <label for="Member_ID" class="form-label">Member_ID</label>
+                            <select class="form-select" name="Member_ID"  id="Member_ID" aria-label="Default select example">
+                                {% for id in id_list %}
+                                <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Name" class="form-label">Name</label>
+                            <input type="text" name="Name" class="form-control" id="Name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Unit" class="form-label">Unit</label>
+                            <input type="text" name="Unit" class="form-control" id="Unit">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock page_content %}

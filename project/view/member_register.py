@@ -5,6 +5,13 @@ from datetime import datetime
 import math
 
 
+# sql setting
+path_to_db = "./db/LabPropertyMgt20211231.db"
+table = 'Member'
+engine = db.create_engine(f'sqlite:///{path_to_db}')
+metadata = db.MetaData()
+table_members = db.Table(table, metadata, autoload=True, autoload_with=engine)
+
 
 member_app = Blueprint('member_app', __name__, url_prefix="/member")
 
@@ -12,12 +19,71 @@ member_app = Blueprint('member_app', __name__, url_prefix="/member")
 @member_app.route('/')
 def index():
     return render_template('index.html',
-                           page_header="member register",
+                           page_header="member functions",
                            current_time=datetime.utcnow())
 
 
-@member_app.route('/form')
-def member_data_edit():
-    return render_template('index.html',
-                           page_header="member data edit",
-                           current_time=datetime.utcnow())
+@member_app.route('/info')
+def member_info_show():
+
+    # query string
+    page = int(request.args.get('page') if request.args.get('page') else 1)
+    each_page = 5
+
+    # set total pages
+    connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+    query = db.select(func.count()).select_from(table_members)
+    proxy = connection.execute(query)
+    total_pages = math.ceil(proxy.fetchall()[0][0]/each_page) # [0][0] => inorder to get the value
+
+    # fetch data & decided by page
+    query = db.select(table_members).limit(each_page).offset((page-1)*each_page)
+    proxy = connection.execute(query)
+    results = proxy.fetchall()
+    print(results[1].keys())
+
+    # Close connection
+    connection.close()
+    
+    return render_template('member_info.html',
+                           page_header="list members info",
+                           total_pages=total_pages,
+                           outputs=results,
+                           page=page)
+
+@member_app.route('/edit_info', methods=["GET", "POST"])
+def member_register():
+
+    if request.method=="POST":
+        try:
+            print("post to here")
+            connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+            query = db.select(table_members.c.Member_ID).order_by(table_members.c.Member_ID)
+            proxy = connection.execute(query)
+            id_list = [idx[0] for idx in proxy.fetchall()]
+            if request.form['Name']: # 希望至少要填寫名子
+                query = db.update(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in request.form.keys()})
+                proxy = connection.execute(query)
+            else:
+                raise Exception
+        except:
+            return render_template('member_info_edit.html',
+                                    page_header="edit member info",id_list=id_list,status="Failed")
+        else:
+            return render_template('member_info_edit.html',
+                                    page_header="edit member info",id_list=id_list,status="Success")
+        finally:
+            # Close connection
+            connection.close()
+           
+    if request.method=="GET":
+        connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+        query = db.select(table_members.c.Member_ID).order_by(table_members.c.Member_ID)
+        proxy = connection.execute(query)
+        id_list = [idx[0] for idx in proxy.fetchall()]
+        connection.close()
+        return render_template('member_info_edit.html',
+                                page_header="edit member info",id_list=id_list)
+
+
+

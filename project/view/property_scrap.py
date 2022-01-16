@@ -14,7 +14,7 @@ table_ScrappingInfo = 'ScrappingInfo'
 table_ScrappingList = 'ScrappingList'
 engine = db.create_engine(f'sqlite:///{path_to_db}')
 metadata = db.MetaData()
-table_customers = db.Table(table, metadata, autoload=True, autoload_with=engine)
+# table_customers = db.Table(table, metadata, autoload=True, autoload_with=engine)
 
 
 @pp_scrap_app.route('/')

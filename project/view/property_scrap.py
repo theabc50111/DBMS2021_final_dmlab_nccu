@@ -112,4 +112,61 @@ def Scrapping_submit():
                                 page_header="Submit data",id_list=id_list,id_list_property=id_list_property)
 
 
-# @pp_scrap_app.route('/Delete')
+@pp_scrap_app.route('/Scrapping_aspect', methods=["GET", "POST"])
+def Scrapping_aspect():
+    if request.method=="POST":
+        try:
+            connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+            query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
+            proxy = connection.execute(query)
+            id_list = [idx[0] for idx in proxy.fetchall()]
+
+            connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+            query = db.select(table_ScrappingInfo.c.ScrappingList_ID).order_by(table_ScrappingInfo.c.ScrappingList_ID)
+            proxy = connection.execute(query)
+            id_list_Scrapping_list = [idx[0] for idx in proxy.fetchall()]
+
+            
+
+            # 開始處理報廢
+            # 新增執行報廢之財務管理人
+            # PropertyManager_ID=request.form[PropertyManager_ID]
+            query =  db.update(table_ScrappingInfo).where(table_ScrappingInfo.c.ScrappingList_ID ==request.form['ScrappingList_ID'] ).values(PropertyManager_ID=request.form['PropertyManager_ID'])
+            # query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=None,Reason=request.form['Reason'])
+            proxy = connection.execute(query)
+            # 刪除財物
+            # query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=None,Reason=request.form['Reason'])
+            sql=db.text("Delete From Property where Property_ID in (select ScrappingList.Property_ID from ScrappingList where ScrappingList_ID='"+request.form['ScrappingList_ID']+"')")
+            # sql=db.delete(table_Property).where(table_Property.c.Property_ID.in_((db.select(table_name_ScrappingList.c.Property_ID).where(table_name_ScrappingList.c.ScrappingList_ID==request.form['ScrappingList_ID']))) )
+            proxy = connection.execute(sql)
+            print(sql)
+            # query = db.insert(table_ScrappingList).values(ScrappingList_ID=request.form['ScrappingList_ID'],Property_ID=request.form['Property_ID'])
+            # proxy = connection.execute(query)
+            # 無法有Date 輸入
+
+        except:
+            return render_template('scrapping_aspect.html',
+                                    page_header="核准報廢清單",id_list=id_list,id_list_Scrapping_list=id_list_Scrapping_list,status="Failed")
+        else:
+            return render_template('scrapping_aspect.html',
+                                    page_header="核准報廢清單",id_list=id_list,id_list_Scrapping_list=id_list_Scrapping_list,status="Success")
+        finally:
+            # Close connection
+            connection.close()
+
+    if request.method=="GET":
+        connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+        query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
+        proxy = connection.execute(query)
+        id_list = [idx[0] for idx in proxy.fetchall()]
+        connection.close()
+
+        connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+        query =  db.select(table_ScrappingInfo.c.ScrappingList_ID).where(table_ScrappingInfo.c.PropertyManager_ID==None).order_by(table_ScrappingInfo.c.ScrappingList_ID)
+        proxy = connection.execute(query)
+        id_list_Scrapping_list = [idx[0] for idx in proxy.fetchall()]
+        connection.close()
+        
+        return render_template('scrapping_aspect.html',
+                                page_header="核准報廢清單",id_list=id_list,id_list_Scrapping_list=id_list_Scrapping_list)
+    

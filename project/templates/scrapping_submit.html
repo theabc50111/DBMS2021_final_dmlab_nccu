@@ -17,15 +17,15 @@
             <div class="card ">
                 <div class="card-body">
                     <form method="POST" action="/pp_scrap/Scrapping_submit">
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="ScrappingList_ID" class="form-label">Scrapping List ID</label>
                             <input type="text" name="ScrappingList_ID" class="form-control" id="ScrappingList_ID">
-                            <!-- <select class="form-select" name="CustomerId"  id="CustomerId" aria-label="Default select example">
+                            <select class="form-select" name="CustomerId"  id="CustomerId" aria-label="Default select example">
                                 {% for id in id_list %}
                                 <option value="{{ id }}">{{ id }}</option>
                                 {% endfor %}
-                            </select> -->
-                        </div>
+                            </select>
+                        </div> -->
                         <div class="mb-3">
                             <label for="Applicant_ID" class="form-label">Applicant_ID</label>
                             <!-- <input type="text" name="FirstName" class="form-control" id="FirstName"> -->
@@ -71,5 +71,31 @@
         </div>
     </div>
 </div>
-
+<ul class="pagination  justify-content-center mt-5">
+    <li class="page-item">
+      <form action="/pp_scrap/Scrapping_aspect">
+        <button class="btn btn-primary">核准財物報廢</button>
+      </form>
+    </li>
+  
+  
+  
+    <!-- <li class="page-item">
+      <form action="/pp_scrap/Scrapping_submit">
+        <button class="btn btn-primary">提交財物報廢清單</button>
+      </form>
+    </li>
+   -->
+    <li class="page-item"></li>
+      <form action="/pp_scrap/">
+        <button class="btn btn-primary">返回報廢功能首頁</button>
+      </form>
+    </li>
+  
+    <!-- <li class="page-item"></li>
+      <form action="/pp_scrap/Scrapping_aspect">
+        <button class="btn btn-primary">查詢個別清單報廢之物品</button>
+      </form>
+    </li> -->
+  </ul>
 {% endblock page_content %}

@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = true;
+
 Drop Table if exists "Applicant";
 Drop Table if exists "Keeper";
 Drop Table if exists "PropertyManager";

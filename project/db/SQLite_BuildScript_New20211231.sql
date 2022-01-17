@@ -1,3 +1,5 @@
+PRAGMA foreign_keys = true;
+
 Drop Table if exists "Applicant";
 Drop Table if exists "Keeper";
 Drop Table if exists "PropertyManager";
@@ -32,6 +34,15 @@ CREATE TABLE "Distribution" (
 	"Keeper_ID"	nchar(10),
 	FOREIGN KEY ("PurchasedItem_Sn") REFERENCES PurchasingList(Sn),
 	FOREIGN KEY ("Keeper_ID") REFERENCES Member(Member_ID)
+);
+
+
+Drop Table if exists "Member";
+CREATE TABLE "Member"(
+	"Member_ID" [nchar](10) NOT NULL,
+	"Name" [nvarchar](50) NULL,
+	"Unit" [nvarchar](50) NULL,
+	PRIMARY KEY("Member_ID")
 );
 
 
@@ -137,13 +148,6 @@ Drop Table if exists "Occupation";
 CREATE TABLE "Occupation" ( 
 	"Member_ID" [nchar](10) NOT NULL,
 	"Occupation" [nvarchar](50) NOT NULL,
-	PRIMARY KEY("Member_ID", "Occupation")
-);
-
-Drop Table if exists "Member";
-CREATE TABLE "Member"(
-	"Member_ID" [nchar](10) NOT NULL,
-	"Name" [nvarchar](50) NULL,
-	"Unit" [nvarchar](50) NULL,
-	PRIMARY KEY("Member_ID")
+	PRIMARY KEY("Member_ID", "Occupation"),
+	FOREIGN KEY ("Member_ID") REFERENCES Member(Member_ID)
 );

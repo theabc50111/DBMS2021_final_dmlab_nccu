@@ -5,7 +5,17 @@ import math
 import pandas as pd
 
 
-path_to_db = "./db/LabPropertyMgt20211231.db"
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
+
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
+
+path_to_db = "./db/sqlite.db"
 engine = db.create_engine(f'sqlite:///{path_to_db}')
 metadata = db.MetaData()
 table_members = db.Table('Member', metadata, autoload=True, autoload_with=engine)
@@ -25,4 +35,12 @@ print(tmp2)
 print(tmp3)
 print(tmp3[0].keys())
 
+
+query = db.insert(table_ocu).values(("ccc","bbb"))
+proxy = connection.execute(query)
+query = db.select(table_ocu)
+proxy = connection.execute(query)
+results = proxy.fetchall()
+
+print(results)
 

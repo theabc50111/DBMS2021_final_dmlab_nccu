@@ -11,7 +11,7 @@ path_to_db = "./db/LabPropertyMgt20211231.db"
 engine = db.create_engine(f'sqlite:///{path_to_db}')
 metadata = db.MetaData()
 table_members = db.Table('Member', metadata, autoload=True, autoload_with=engine)
-table_ocu = db.Table('Occupation', metadata, autoload=True, autoload_with=engine)
+table_occupation = db.Table('Occupation', metadata, autoload=True, autoload_with=engine)
 
 
 member_app = Blueprint('member_app', __name__, url_prefix="/member")
@@ -37,7 +37,7 @@ def member_info_show():
 
     # fetch data & decided by page
     # query = db.select(table_members).limit(each_page).offset((page-1)*each_page)
-    query = db.select(table_members,table_ocu.c.Occupation).select_from(table_members.outerjoin(table_ocu)).limit(each_page).offset((page-1)*each_page)
+    query = db.select(table_members,table_occupation.c.Occupation).select_from(table_members.outerjoin(table_occupation)).limit(each_page).offset((page-1)*each_page)
     proxy = connection.execute(query)
     sql_results = proxy.fetchall()
 
@@ -67,6 +67,7 @@ def member_edit_info():
             if request.form['Name'] or request.form['Delete_member']: # 希望至少要填寫名子
                 if request.form['Delete_member']:
                     print(type(request.form['Delete_member']))
+                    query = db.delete(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in request.form.keys()})
                 else:
                     query = db.update(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in request.form.keys()})
                     proxy = connection.execute(query)

@@ -6,6 +6,10 @@ import math
 import pandas as pd
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
+import traceback
+import sys
+
+
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
@@ -49,7 +53,9 @@ def member_info_show():
     sql_results = proxy.fetchall()
 
     tmp_df = pd.DataFrame(sql_results, columns=["Member_ID", 'Name', "Unit", "Occupation"])
-    results = pd.concat([tmp_df.drop(["Occupation"], axis=1), pd.get_dummies(tmp_df["Occupation"], dtype='bool')], axis=1).to_dict(orient="records")
+    results = pd.concat([tmp_df.drop(["Occupation"], axis=1), pd.get_dummies(tmp_df["Occupation"])], axis=1).groupby(["Member_ID", "Name", "Unit"]).sum().astype('bool').reset_index().to_dict(orient="records")
+    # print(results)
+    # results = pd.concat([tmp_df.drop(["Occupation"], axis=1), pd.get_dummies(tmp_df["Occupation"], dtype='bool')], axis=1).to_dict(orient="records")
 
     # Close connection
     connection.close()
@@ -70,16 +76,28 @@ def member_edit_info():
             proxy = connection.execute(query)
             id_list = [idx[0] for idx in proxy.fetchall()]
             if request.form['Name'] or request.form['Delete_member']: # 希望至少要填寫名子
-                if request.form['Delete_member']:
-                    print(request.form['Delete_member'])
+                if 'Delete_member' in request.form:
                     query = db.delete(table_members).where(table_members.c.Member_ID == request.form['Member_ID'])
                     connection.execute(query)
                 else:
-                    query = db.update(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in request.form.keys()})
-                    proxy = connection.execute(query)
+                    query = db.update(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in ['Name', 'Unit']})
+                    connection.execute(query)
+                    query = db.delete(table_occupation).where(table_occupation.c.Member_ID == request.form['Member_ID'])
+                    connection.execute(query)
+                    query = db.insert(table_occupation).values([(request.form['Member_ID'], request.form.getlist('Occupation')[i]) for i in range(len(request.form.getlist('Occupation')))])
+                    connection.execute(query)
             else:
                 raise Exception
-        except:
+        except Exception as e:
+            error_class = e.__class__.__name__ #取得錯誤類型
+            detail = e.args[0] #取得詳細內容
+            cl, exc, tb = sys.exc_info() #取得Call Stack
+            lastCallStack = traceback.extract_tb(tb)[-1] #取得Call Stack的最後一筆資料
+            fileName = lastCallStack[0] #取得發生的檔案名稱
+            lineNum = lastCallStack[1] #取得發生的行號
+            funcName = lastCallStack[2] #取得發生的函數名稱
+            errMsg = "File \"{}\", line {}, in {}: [{}] {}".format(fileName, lineNum, funcName, error_class, detail)
+            print(errMsg)
             return render_template('member_info_edit.html',
                                     page_header="edit member info",id_list=id_list,status="Failed")
         else:

@@ -146,5 +146,6 @@ Drop Table if exists "Occupation";
 CREATE TABLE "Occupation" ( 
 	"Member_ID" [nchar](10) NOT NULL,
 	"Occupation" [nvarchar](50) NOT NULL,
-	PRIMARY KEY("Member_ID", "Occupation")
+	PRIMARY KEY("Member_ID", "Occupation"),
+	FOREIGN KEY ("Member_ID") REFERENCES Member(Member_ID)
 );

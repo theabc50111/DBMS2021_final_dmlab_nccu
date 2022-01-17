@@ -65,8 +65,11 @@ def member_edit_info():
             proxy = connection.execute(query)
             id_list = [idx[0] for idx in proxy.fetchall()]
             if request.form['Name'] or request.form['Delete_member']: # 希望至少要填寫名子
-                query = db.update(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in request.form.keys()})
-                proxy = connection.execute(query)
+                if request.form['Delete_member']:
+                    print(type(request.form['Delete_member']))
+                else:
+                    query = db.update(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in request.form.keys()})
+                    proxy = connection.execute(query)
             else:
                 raise Exception
         except:

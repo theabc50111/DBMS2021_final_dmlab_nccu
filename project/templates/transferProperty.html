@@ -1,0 +1,59 @@
+{% extends "parts/base.html" %}
+{% block title %}Transfer property{% endblock title %}
+
+{% block page_content %}
+{{ super() }}
+
+
+<!-- {{xxxxx}} 來接收路由傳遞的參數結果??-->
+<!--   <form action=”傳送目的地” method=”傳送方式”></form>   -->
+
+<h1>&nbsp</h1> <!-- 留白用 />-->
+
+<!--  實際上長這樣:<form action="/bookUpdate" method="post">  -->
+<form action="{{ url_for('property_info_app.transfer')}}" method="post"> 
+    <h3>Transfer Keeper</h3>
+    {% for bk in book %}
+    <div class="form-group">
+        Property_ID<input class="form-control" type="text" name="property_id" placeholder="Property_ID" value={{bk[0]}} readonly>
+    </div>
+
+
+    <div class="form-group">
+        Applicant_ID<input class="form-control" type="text" name="applicant_id" placeholder="Applicant_ID">
+    </div>
+
+    <div class="form-group">
+        PropertyManager_ID<input class="form-control" type="text" name="propertymanager_id" placeholder="PropertyManager_ID">
+    </div>
+
+
+    <div class="form-group">
+        PropertyName<input class="form-control" type="text" name="propertyname" placeholder="PropertyName" value={{bk[1]}} readonly>
+    </div>
+    <div class="form-group">
+        Type<input class="form-control" type="text" name="type" placeholder="Type" value={{bk[2]}} readonly>
+    </div>
+    <div class="form-group">
+        Price<input class="form-control" type="text" name="price" placeholder="Price" value={{bk[3]}} readonly>
+    </div>
+    <div class="form-group">
+        ServiceLife<input class="form-control" type="text" name="servicelife" placeholder="ServiceLife" value={{bk[4]}} readonly>
+    </div>
+    <div class="form-group">
+       New Keeper_ID<input class="form-control" type="text" name="keeper_id" placeholder="Keeper_ID" value={{bk[5]}}>
+    </div>
+    <div class="form-group">
+        StartDate<input class="form-control" type="text" name="startdate" placeholder="StartDate" value={{bk[6]}} readonly>
+    </div>
+    <div class="form-group">
+        Location<input class="form-control" type="text" name="location" placeholder="Location" value={{bk[7]}} readonly>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-primary">Submit</button>
+    </div>
+    {% endfor %}
+    </form>
+
+    <b><a href="/pp_info/propertylist">Back to list</a></b>
+{% endblock page_content %}

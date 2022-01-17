@@ -68,6 +68,7 @@ def init_app(app):
 
 
         # insert 財務移轉清單
+        """
         approved = ""
         current_transfer_id=db.session.execute("SELECT max(TransferingList_ID) FROM TransferingInfo ").fetchone()
         current_transfer_id = (current_transfer_id[0]).replace("T", "")
@@ -80,6 +81,7 @@ def init_app(app):
         db.session.execute("INSERT INTO TransferingInfo (TransferingList_ID, Applicant_ID, SubmitDate, Aproved, PropertyManager_ID) VALUES (:transfer_id, :applicant_id, :submitdate, :approved, :propertymanager_id)",
             {"transfer_id": next_transfer_id, "applicant_id": applicant_id, "submitdate":today, "approved":approved, "propertymanager_id": propertymanager_id}) 
         db.session.commit()
+        """
  
   
         return redirect(url_for('property_info_app.propertylist'))

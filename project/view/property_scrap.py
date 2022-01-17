@@ -68,7 +68,7 @@ def Scrapping_submit():
             proxy = connection.execute(query)
             id_list_property = [idx[0] for idx in proxy.fetchall()]
 
-            if request.form['Applicant_ID']: # 希望至少要填寫名子
+            if request.form['Reason']&request.form['Date']: # 希望至少要填寫名子
                 query = db.select(table_ScrappingInfo.c.ScrappingList_ID).select_from(table_ScrappingInfo).order_by(table_ScrappingInfo.c.ScrappingList_ID.desc())
                 proxy = connection.execute(query)
                 ScrappingList_ID_GENERATE = 'S'+str(int([idx[0] for idx in proxy.fetchall()][0].split('S')[1])+1)

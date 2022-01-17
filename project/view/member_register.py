@@ -4,7 +4,14 @@ from sqlalchemy import func
 from datetime import datetime
 import math
 import pandas as pd
+from sqlalchemy.engine import Engine
+from sqlalchemy import event
 
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
 # sql setting
 path_to_db = "./db/LabPropertyMgt20211231.db"
@@ -43,8 +50,6 @@ def member_info_show():
 
     tmp_df = pd.DataFrame(sql_results, columns=["Member_ID", 'Name', "Unit", "Occupation"])
     results = pd.concat([tmp_df.drop(["Occupation"], axis=1), pd.get_dummies(tmp_df["Occupation"], dtype='bool')], axis=1).to_dict(orient="records")
-    print(sql_results)
-    print(results)
 
     # Close connection
     connection.close()
@@ -66,8 +71,9 @@ def member_edit_info():
             id_list = [idx[0] for idx in proxy.fetchall()]
             if request.form['Name'] or request.form['Delete_member']: # 希望至少要填寫名子
                 if request.form['Delete_member']:
-                    print(type(request.form['Delete_member']))
-                    query = db.delete(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in request.form.keys()})
+                    print(request.form['Delete_member'])
+                    query = db.delete(table_members).where(table_members.c.Member_ID == request.form['Member_ID'])
+                    connection.execute(query)
                 else:
                     query = db.update(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in request.form.keys()})
                     proxy = connection.execute(query)

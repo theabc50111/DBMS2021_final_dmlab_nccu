@@ -1,0 +1,63 @@
+{% extends "parts/base.html" %}
+{% block title %}Property List{% endblock title %}
+
+{% block page_content %}
+{{ super() }}
+
+
+
+
+  <li class="page-item">
+    <form action="/pp_info/addproperty">
+      <button class="btn btn-primary">登錄財物資料</button>
+    </form>
+  </li>
+
+
+
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">PropertyName</th>
+        <th scope="col">Type</th>
+        <th scope="col">Price</th>
+        <th scope="col">ServiceLife</th>
+        <th scope="col">Keeper_ID</th>
+        <th scope="col">StartDate</th>
+        <th scope="col">Location</th>
+        <th scope="col">Action</th>
+    
+      </tr>
+    </thead>
+      {% for book in books %}
+      <tr>
+      <th scope="row">{{book.Property_ID}}</th>
+      <td>{{book.PropertyName}}
+      </td>
+      <td>{{book.Type}}
+      </td>
+      <td>{{book.Price}}
+      </td>
+      <td>{{book.ServiceLife}}
+      </td>
+      <td>{{book.Keeper_ID}}
+      </td>
+      <td>{{book.StartDate}}
+      </td>
+      <td>{{book.Location}}
+      </td>
+      <td><b><a href="{{url_for('property_info_app.propertyTransfer', bookid=book.Property_ID)}}">財物移轉</a></b>
+      </td>
+     
+
+
+      </tr>
+      {% endfor %}
+  </table>
+
+</body>
+</html>
+{% endblock page_content %}
+  

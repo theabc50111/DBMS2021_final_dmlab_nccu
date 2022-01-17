@@ -3,14 +3,15 @@ import sqlalchemy as db
 from sqlalchemy import func
 from datetime import datetime
 import math
+import pandas as pd
 
 
 # sql setting
 path_to_db = "./db/LabPropertyMgt20211231.db"
-table = 'Member'
 engine = db.create_engine(f'sqlite:///{path_to_db}')
 metadata = db.MetaData()
-table_members = db.Table(table, metadata, autoload=True, autoload_with=engine)
+table_members = db.Table('Member', metadata, autoload=True, autoload_with=engine)
+table_ocu = db.Table('Occupation', metadata, autoload=True, autoload_with=engine)
 
 
 member_app = Blueprint('member_app', __name__, url_prefix="/member")
@@ -18,9 +19,7 @@ member_app = Blueprint('member_app', __name__, url_prefix="/member")
 
 @member_app.route('/')
 def index():
-    return render_template('index.html',
-                           page_header="member functions",
-                           current_time=datetime.utcnow())
+    return render_template('index.html',page_header="member functions",current_time=datetime.utcnow())
 
 
 @member_app.route('/info')
@@ -37,9 +36,15 @@ def member_info_show():
     total_pages = math.ceil(proxy.fetchall()[0][0]/each_page) # [0][0] => inorder to get the value
 
     # fetch data & decided by page
-    query = db.select(table_members).limit(each_page).offset((page-1)*each_page)
+    # query = db.select(table_members).limit(each_page).offset((page-1)*each_page)
+    query = db.select(table_members,table_ocu.c.Occupation).select_from(table_members.outerjoin(table_ocu)).limit(each_page).offset((page-1)*each_page)
     proxy = connection.execute(query)
-    results = proxy.fetchall()
+    sql_results = proxy.fetchall()
+
+    tmp_df = pd.DataFrame(sql_results, columns=["Member_ID", 'Name', "Unit", "Occupation"])
+    results = pd.concat([tmp_df.drop(["Occupation"], axis=1), pd.get_dummies(tmp_df["Occupation"], dtype='bool')], axis=1).to_dict(orient="records")
+    print(sql_results)
+    print(results)
 
     # Close connection
     connection.close()
@@ -59,7 +64,7 @@ def member_edit_info():
             query = db.select(table_members.c.Member_ID).order_by(table_members.c.Member_ID)
             proxy = connection.execute(query)
             id_list = [idx[0] for idx in proxy.fetchall()]
-            if request.form['Name']: # 希望至少要填寫名子
+            if request.form['Name'] or request.form['Delete_member']: # 希望至少要填寫名子
                 query = db.update(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in request.form.keys()})
                 proxy = connection.execute(query)
             else:

@@ -7,17 +7,21 @@
 <table class="table table-light table-striped table-hover mt-5">
     <thead>
       <tr>
-        <th scope="col">Member_Id</th>
-        <th scope="col">Name</th>
-        <th scope="col">Unit</th>
+        {% for key in outputs[0] %}
+        <th scope="col">{{ key }}</th>
+        {% endfor %}
       </tr>
     </thead>
     <tbody>
         {% for col in outputs %}
         <tr>
-            <th scope="row">{{ col['Member_ID'] }}</th>
-            <td>{{ col['Name'] }}</td>
-            <td>{{ col['Unit'] }}</td>
+            {% for k in col %}
+                {% if k=='Member_ID' %}
+                    <th scope="row">{{ col[k] }}</th>
+                {% else %}
+                    <td>{{ col[k] }}</td>
+                {% endif %}
+            {% endfor %}
           </tr>
         {% endfor %}
     </tbody>

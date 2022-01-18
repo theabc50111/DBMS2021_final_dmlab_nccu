@@ -15,6 +15,7 @@ table_name_ScrappingList = 'ScrappingList'
 table_name_Property = 'Property'
 table_name_Member='Member'
 table_name_Occupation='Occupation'
+table_name_TransferingList='TransferingList'
 engine = db.create_engine(f'sqlite:///{path_to_db}',native_datetime=True)
 
 # connection  = engine.connect()
@@ -25,7 +26,7 @@ table_ScrappingList  = db.Table(table_name_ScrappingList, metadata, autoload=Tru
 table_Property  = db.Table(table_name_Property, metadata, autoload=True, autoload_with=engine)
 table_Member= db.Table(table_name_Member, metadata, autoload=True, autoload_with=engine)
 table_Occupation= db.Table(table_name_Occupation, metadata, autoload=True, autoload_with=engine)
-
+table_TransferingList=db.Table(table_name_TransferingList, metadata,autoload=True, autoload_with=engine)
 
 @pp_scrap_app.route('/')
 def index(): #show scrappinginfo
@@ -70,7 +71,7 @@ def Scrapping_submit():
             proxy = connection.execute(query)
             id_list_property = [idx[0] for idx in proxy.fetchall()]
 
-            if request.form['Reason']&request.form['Date']: # 希望至少要填寫名子
+            if request.form['Date'] and request.form['Reason'] : # 希望至少要填寫名子
                 query = db.select(table_ScrappingInfo.c.ScrappingList_ID).select_from(table_ScrappingInfo).order_by(table_ScrappingInfo.c.ScrappingList_ID.desc())
                 proxy = connection.execute(query)
                 ScrappingList_ID_GENERATE = 'S'+str(int([idx[0] for idx in proxy.fetchall()][0].split('S')[1])+1)
@@ -138,11 +139,26 @@ def Scrapping_aspect():
             # query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=None,Reason=request.form['Reason'])
             proxy = connection.execute(query)
             # 刪除財物
-            # query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=None,Reason=request.form['Reason'])
-            sql=db.text("Delete From Property where Property_ID in (select ScrappingList.Property_ID from ScrappingList where ScrappingList_ID='"+request.form['ScrappingList_ID']+"')")
-            # sql=db.delete(table_Property).where(table_Property.c.Property_ID.in_((db.select(table_name_ScrappingList.c.Property_ID).where(table_name_ScrappingList.c.ScrappingList_ID==request.form['ScrappingList_ID']))) )
+            sql=db.select(table_ScrappingList.c.Property_ID).where(table_ScrappingList.c.ScrappingList_ID==request.form['ScrappingList_ID']).order_by(table_ScrappingList.c.Property_ID)
             proxy = connection.execute(sql)
-            print(sql)
+            delete_item = [idx[0] for idx in proxy.fetchall()][0]
+            sql=db.delete(table_TransferingList).where(table_TransferingList.c.Property_ID==delete_item)
+            proxy = connection.execute(sql)
+            sql=db.delete(table_ScrappingList).where(table_ScrappingList.c.Property_ID==delete_item)
+            proxy = connection.execute(sql)
+        #    1l3hjp4
+            # query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=None,Reason=request.form['Reason'])
+            # sql=db.text("Delete From Property where Property_ID in (select ScrappingList.Property_ID from ScrappingList where ScrappingList_ID='"+request.form['ScrappingList_ID']+"')")
+          
+            # sql=db.delete(table_Property).where(
+            #     table_Property.c.Property_ID==(delete_item)
+            #     )
+            
+            # query = db.insert(table_ScrappingInfo).values(ScrappingList_ID=request.form['ScrappingList_ID'],Applicant_ID=request.form['Applicant_ID'],SubmitDate=None,Reason=request.form['Reason'])
+            # sql=db.text("Delete From Property where Property_ID in (select ScrappingList.Property_ID from ScrappingList where ScrappingList_ID='"+request.form['ScrappingList_ID']+"')")
+            sql=db.delete(table_Property).where(table_Property.c.Property_ID==delete_item )
+            proxy = connection.execute(sql)
+            # print(sql)
             # query = db.insert(table_ScrappingList).values(ScrappingList_ID=request.form['ScrappingList_ID'],Property_ID=request.form['Property_ID'])
             # proxy = connection.execute(query)
   
@@ -218,7 +234,7 @@ def Scrapping_search():
     if request.method=="GET":
 
         connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
-        query =  db.select(table_ScrappingInfo.c.ScrappingList_ID).order_by(table_ScrappingInfo.c.ScrappingList_ID)
+        query =  db.select(table_ScrappingList.c.ScrappingList_ID).order_by(table_ScrappingList.c.ScrappingList_ID)
         proxy = connection.execute(query)
         id_list_Scrapping_list = [idx[0] for idx in proxy.fetchall()]
         connection.close()

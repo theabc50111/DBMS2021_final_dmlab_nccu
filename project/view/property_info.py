@@ -87,3 +87,28 @@ def init_app(app):
         
   
         return redirect(url_for('property_info_app.propertylist'))
+
+
+    # 財務移轉清單
+    @pp_info_app.route("/transferlist")
+    def transferList():
+        list=db.session.execute("SELECT * FROM TransferingList order by TransferingList_ID")
+        return render_template("transferlist.html", books=list)
+
+
+
+    # for deleting the 2nd entry, it's like: http://127.0.0.1:5000/bookDelete/2
+    @pp_info_app.route("/propertyListDelete/<string:bookid>")
+    def propertyListDelete(bookid):
+        # create delete query as string
+        #strSQL="delete from TransferingList where TransferingList_ID="+str(bookid)
+        # execute delete query
+        #db.session.execute(strSQL) 
+        # commit to database
+
+        db.session.execute("DELETE FROM TransferingList WHERE TransferingList_ID = :keeper",{"keeper":str(bookid)})
+        db.session.commit()
+        db.session.execute("DELETE FROM TransferingInfo WHERE TransferingList_ID = :keeper",{"keeper":str(bookid)})
+        db.session.commit() 
+        return redirect(url_for('property_info_app.transferlist'))
+

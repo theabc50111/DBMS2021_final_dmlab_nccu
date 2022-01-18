@@ -67,21 +67,23 @@ def init_app(app):
 
 
 
-        # insert 財務移轉清單
-        """
+        
+        
         approved = ""
         current_transfer_id=db.session.execute("SELECT max(TransferingList_ID) FROM TransferingInfo ").fetchone()
         current_transfer_id = (current_transfer_id[0]).replace("T", "")
         next_transfer_id = "T" + str(int(current_transfer_id) + 1) 
-        db.session.execute("INSERT INTO TransferingList (TransferingList_ID, Property_ID, NewKeeper_ID) VALUES (:transfer_id, :property_id, :newkeeper_id)",
-        {"transfer_id": next_transfer_id, "property_id": property_id, "newkeeper_id": keeper_id})
-        db.session.commit()
 
         # insert 財務移轉資訊
         db.session.execute("INSERT INTO TransferingInfo (TransferingList_ID, Applicant_ID, SubmitDate, Aproved, PropertyManager_ID) VALUES (:transfer_id, :applicant_id, :submitdate, :approved, :propertymanager_id)",
             {"transfer_id": next_transfer_id, "applicant_id": applicant_id, "submitdate":today, "approved":approved, "propertymanager_id": propertymanager_id}) 
         db.session.commit()
-        """
- 
+
+        # insert 財務移轉清單
+        db.session.execute("INSERT INTO TransferingList (TransferingList_ID, Property_ID, NewKeeper_ID) VALUES (:transfer_id, :property_id, :newkeeper_id)",
+        {"transfer_id": next_transfer_id, "property_id": property_id, "newkeeper_id": keeper_id})
+        db.session.commit()
+
+        
   
         return redirect(url_for('property_info_app.propertylist'))

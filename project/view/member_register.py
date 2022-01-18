@@ -80,15 +80,16 @@ def member_edit_info():
                 else:
                     query = db.update(table_members).where(table_members.c.Member_ID == request.form['Member_ID']).values(**{k:request.form[k] for k in ['Name', 'Unit']})
                     connection.execute(query)
-                    query = db.delete(table_occupation).where(table_occupation.c.Member_ID == request.form['Member_ID'])
-                    connection.execute(query)
-                    query = db.insert(table_occupation).values([(request.form['Member_ID'], request.form.getlist('Occupation')[i]) for i in range(len(request.form.getlist('Occupation')))])
-                    connection.execute(query)
+                    if "Occupation" in request.form:
+                        query = db.delete(table_occupation).where(table_occupation.c.Member_ID == request.form['Member_ID'])
+                        connection.execute(query)
+                        query = db.insert(table_occupation).values([(request.form['Member_ID'], request.form.getlist('Occupation')[i]) for i in range(len(request.form.getlist('Occupation')))])
+                        connection.execute(query)
             else:
                 raise Exception
         except Exception as e:
             error_class = e.__class__.__name__ #取得錯誤類型
-            detail = e.args[0] #取得詳細內容
+            detail = e.args[0] if len(e.args)>=1 else "" #取得詳細內容
             cl, exc, tb = sys.exc_info() #取得Call Stack
             lastCallStack = traceback.extract_tb(tb)[-1] #取得Call Stack的最後一筆資料
             fileName = lastCallStack[0] #取得發生的檔案名稱

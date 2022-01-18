@@ -29,9 +29,11 @@ CREATE TABLE "BargainingQuotation" (
 Drop Table if exists "Distribution";
 CREATE TABLE "Distribution" (
 	"PurchasedItem_Sn"	nchar(10),
-	"Keeper_ID"	nchar(10),
+	"Keeper_ID"	nchar(10) DEFAULT "ex-member",
 	FOREIGN KEY ("PurchasedItem_Sn") REFERENCES PurchasingList(Sn),
-	FOREIGN KEY ("Keeper_ID") REFERENCES Member(Member_ID)
+	CONSTRAINT DisKPMemFK
+		FOREIGN KEY ("Keeper_ID") REFERENCES Member(Member_ID)
+			ON DELETE SET DEFAULT ON UPDATE Cascade
 );
 
 
@@ -51,27 +53,33 @@ CREATE TABLE "Property" (
 	"Type" [nchar](10) NULL,
 	"Price" [int] NULL,
 	"ServiceLife" [int] NULL,
-	"Keeper_ID" [nchar](10) NULL,
+	"Keeper_ID" [nchar](10) NULL DEFAULT "ex-member",
 	"StartDate" [date] NULL,
 	"Location" [nvarchar](50) NULL,
 	PRIMARY KEY("Property_ID"),
-	FOREIGN KEY ("Keeper_ID") REFERENCES Member(Member_ID)
+	CONSTRAINT PpKPMemFK
+		FOREIGN KEY ("Keeper_ID") REFERENCES Member(Member_ID)
+			ON DELETE SET DEFAULT ON UPDATE Cascade
 );
 
 
 Drop Table if exists "PurchasingInfo";
 CREATE TABLE "PurchasingInfo"(
-	"Applicant_ID" [nchar](10) NULL,
+	"Applicant_ID" [nchar](10) NULL DEFAULT "ex-member",
 	"List_ID" [nchar](10) NOT NULL,
 	"SubmitDate" [date] NULL,
-	"Purchaser_ID" [nchar](10) NULL,
+	"Purchaser_ID" [nchar](10) NULL DEFAULT "ex-member",
 	"AcceptDate" [date] NULL,
 	"TransactionDate" [date] NULL,
 	"DeliveryDate" [date] NULL,
 	"Supplier_ID" [nchar](10) NULL,
 	PRIMARY KEY("List_ID"),
-	FOREIGN KEY ("Applicant_ID") REFERENCES Member(Member_ID),
-	FOREIGN KEY ("Purchaser_ID") REFERENCES Member(Member_ID),
+	CONSTRAINT PurchInfoAPMemFK
+		FOREIGN KEY ("Applicant_ID") REFERENCES Member(Member_ID)
+			ON DELETE SET DEFAULT ON UPDATE Cascade,
+	CONSTRAINT PurchInfoPCMemFK
+		FOREIGN KEY ("Purchaser_ID") REFERENCES Member(Member_ID)
+			ON DELETE SET DEFAULT ON UPDATE Cascade,
 	FOREIGN KEY ("Supplier_ID") REFERENCES Supplier(Supplier_ID)
 );
 
@@ -90,18 +98,18 @@ CREATE TABLE "PurchasingList"(
 
 Drop Table if exists "ScrappingInfo";
 CREATE TABLE "ScrappingInfo"(
-	"ScrappingList_ID" [nchar](10) NOT NULL DEFAULT "former member/unknown member",
-	"Applicant_ID" [nchar](10) NULL,
+	"ScrappingList_ID" [nchar](10) NOT NULL,
+	"Applicant_ID" [nchar](10) NULL DEFAULT "ex-member",
 	"SubmitDate" [date] NULL,
 	"Reason" [nvarchar](255) NULL,
-	"PropertyManager_ID" [nchar](10) NULL DEFAULT "former member/unknown member",
+	"PropertyManager_ID" [nchar](10) NULL DEFAULT "ex-member",
 	PRIMARY KEY("ScrappingList_ID"),
 	CONSTRAINT ScrapInfoAPMemFK
-		FOREIGN KEY ("Applicant_ID") REFERENCES Member(Member_ID),
-			ON DELETE Cascade ON UPDATE Cascade,
+		FOREIGN KEY ("Applicant_ID") REFERENCES Member(Member_ID)
+			ON DELETE SET DEFAULT ON UPDATE Cascade,
 	CONSTRAINT ScrapInfoPMMemFK
 		FOREIGN KEY ("PropertyManager_ID") REFERENCES Member(Member_ID)
-			ON DELETE Cascade ON UPDATE Cascade,
+			ON DELETE SET DEFAULT ON UPDATE Cascade
 );
 
 
@@ -126,14 +134,14 @@ CREATE TABLE "Supplier"(
 Drop Table if exists "TransferingInfo";
 CREATE TABLE "TransferingInfo"(
 	"TransferingList_ID" [nchar](10) NOT NULL,
-	"Applicant_ID" [nchar](10) NULL DEFAULT "former member/unknown member",
+	"Applicant_ID" [nchar](10) NULL  DEFAULT "ex-member",
 	"SubmitDate" [date] NULL,
 	"Aproved" [char](10) NULL,
-	"PropertyManager_ID" [nchar](10) NULL DEFAULT "former member/unknown member",
+	"PropertyManager_ID" [nchar](10) NULL DEFAULT "ex-member",
 	PRIMARY KEY("TransferingList_ID"),
 	CONSTRAINT TransInfoAPMemFK
-		FOREIGN KEY ("Applicant_ID") REFERENCES Member(Member_ID),
-			ON DELETE SET DEFAULT ON UPDATE Cascade
+		FOREIGN KEY ("Applicant_ID") REFERENCES Member(Member_ID)
+			ON DELETE SET DEFAULT ON UPDATE Cascade,
 	CONSTRAINT TransInfoPMMemFK
 		FOREIGN KEY ("PropertyManager_ID") REFERENCES Member(Member_ID)
 			ON DELETE SET DEFAULT ON UPDATE Cascade
@@ -145,7 +153,7 @@ Drop Table if exists "TransferingList";
 CREATE TABLE "TransferingList"(
 	"TransferingList_ID" [nchar](10) NOT NULL,
 	"Property_ID" [nchar](10) NOT NULL,
-	"NewKeeper_ID" [nchar](10) NOT NULL DEFAULT "former member/unknown member",
+	"NewKeeper_ID" [nchar](10) NOT NULL DEFAULT "ex-member",
 	FOREIGN KEY ("TransferingList_ID") REFERENCES TransferingInfo(TransferingList_ID),
 	FOREIGN KEY ("Property_ID") REFERENCES Property(Property_ID),
 	CONSTRAINT TransListMemFK

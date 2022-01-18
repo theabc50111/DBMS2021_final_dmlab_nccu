@@ -113,5 +113,5 @@ def init_app(app):
         db.session.commit()
         db.session.execute("DELETE FROM TransferingInfo WHERE TransferingList_ID = :keeper",{"keeper":str(bookid)})
         db.session.commit() 
-        return redirect(url_for('property_info_app.transferlist'))
+        return redirect(url_for('property_info_app.transferList'))
 

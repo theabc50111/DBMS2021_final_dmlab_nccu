@@ -47,15 +47,12 @@ def member_info_show():
     total_pages = math.ceil(proxy.fetchall()[0][0]/each_page) # [0][0] => inorder to get the value
 
     # fetch data & decided by page
-    # query = db.select(table_members).limit(each_page).offset((page-1)*each_page)
     query = db.select(table_members,table_occupation.c.Occupation).select_from(table_members.outerjoin(table_occupation)).limit(each_page).offset((page-1)*each_page)
     proxy = connection.execute(query)
     sql_results = proxy.fetchall()
 
     tmp_df = pd.DataFrame(sql_results, columns=["Member_ID", 'Name', "Unit", "Occupation"])
     results = pd.concat([tmp_df.drop(["Occupation"], axis=1), pd.get_dummies(tmp_df["Occupation"])], axis=1).groupby(["Member_ID", "Name", "Unit"]).sum().astype('bool').reset_index().to_dict(orient="records")
-    # print(results)
-    # results = pd.concat([tmp_df.drop(["Occupation"], axis=1), pd.get_dummies(tmp_df["Occupation"], dtype='bool')], axis=1).to_dict(orient="records")
 
     # Close connection
     connection.close()

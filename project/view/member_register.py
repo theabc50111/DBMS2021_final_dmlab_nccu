@@ -30,7 +30,7 @@ member_app = Blueprint('member_app', __name__, url_prefix="/member")
 
 @member_app.route('/')
 def index():
-    return render_template('index.html',page_header="member functions",current_time=datetime.utcnow())
+    return render_template('member_index.html',page_header="member functions",current_time=datetime.utcnow())
 
 
 @member_app.route('/info')

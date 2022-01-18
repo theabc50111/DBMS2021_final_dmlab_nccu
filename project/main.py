@@ -10,10 +10,11 @@ from view.property_scrap import pp_scrap_app
 from view.property_transfer import pp_trans_app
 from view.purchase_build import pc_build_app
 from view.purchase_info import pc_info_app
-
+import view.property_info # to avoid circular imports for view.property_info
 
 
 app = Flask(__name__)
+view.property_info.init_app(app) # to avoid circular imports for view.property_info
 moment = Moment(app)
 app.register_blueprint(member_app)
 app.register_blueprint(pp_info_app)

@@ -14,6 +14,7 @@ table_name_ScrappingInfo = 'ScrappingInfo'
 table_name_ScrappingList = 'ScrappingList'
 table_name_Property = 'Property'
 table_name_Member='Member'
+table_name_Occupation='Occupation'
 engine = db.create_engine(f'sqlite:///{path_to_db}',native_datetime=True)
 
 # connection  = engine.connect()
@@ -23,6 +24,7 @@ table_ScrappingInfo = db.Table(table_name_ScrappingInfo, metadata, autoload=True
 table_ScrappingList  = db.Table(table_name_ScrappingList, metadata, autoload=True, autoload_with=engine)
 table_Property  = db.Table(table_name_Property, metadata, autoload=True, autoload_with=engine)
 table_Member= db.Table(table_name_Member, metadata, autoload=True, autoload_with=engine)
+table_Occupation= db.Table(table_name_Occupation, metadata, autoload=True, autoload_with=engine)
 
 
 @pp_scrap_app.route('/')
@@ -118,7 +120,7 @@ def Scrapping_aspect():
     if request.method=="POST":
         try:
             connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
-            query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
+            query = db.select(table_Occupation.c.Member_ID).where(table_Occupation.c.Occupation=='財產管理人').distinct().order_by(table_Occupation.c.Member_ID)
             proxy = connection.execute(query)
             id_list = [idx[0] for idx in proxy.fetchall()]
 
@@ -157,7 +159,7 @@ def Scrapping_aspect():
 
     if request.method=="GET":
         connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
-        query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
+        query = db.select(table_Occupation.c.Member_ID).where(table_Occupation.c.Occupation=='財產管理人').distinct().order_by(table_Occupation.c.Member_ID)
         proxy = connection.execute(query)
         id_list = [idx[0] for idx in proxy.fetchall()]
         connection.close()

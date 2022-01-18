@@ -1,0 +1,61 @@
+{% extends "parts/base.html" %}
+{% block title %}data-list{% endblock title %}
+
+
+{% block page_content %}
+{{ super() }}
+
+
+<div class="container mt-5">
+    <div class="row" id="msg-bar" style="display: {{ 'block' if request.method=='POST' else 'none' }}">
+        <div class="alert {{ 'alert-primary' if status=='Success' else 'alert-danger'}} " role="alert">
+            {{ status }}
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-10">
+            <div class="card ">
+                <div class="card-body">
+                    <form method="POST" action="/pc_build/purchasing_submit">
+                        <div class="mb-3">
+                            <label for="List_ID" class="form-label">List_ID</label>
+                            <select class="form-select" name="List_ID"  id="List_ID" aria-label="Default select example">
+                                {% for id in id_list %}
+                                <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                      <div class="mb-3">
+                          <label for="Item" class="form-label">Item</label>
+                          <textarea class="form-control" name="Item" id="Item" rows="1"></textarea>
+                      </div>
+
+                      <div class="mb-3">
+                        <label for="Specification" class="form-label">Specification</label>
+                        <textarea class="form-control" name="Specification" id="Specification" rows="1"></textarea>
+                    </div>
+
+                        <div class="mb-3">
+                            <label for="Amount" class="form-label">Amount</label>
+                            <textarea class="form-control" name="Amount" id="Amount" rows="1"></textarea>
+                        </div>
+
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul class="pagination  justify-content-center mt-5">
+
+
+    <li class="page-item"></li>
+      <form action="/pc_build/">
+        <button class="btn btn-primary">返回採購清單首頁</button>
+      </form>
+    </li>
+    
+  </ul>
+{% endblock page_content %}

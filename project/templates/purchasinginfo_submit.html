@@ -1,0 +1,102 @@
+{% extends "parts/base.html" %}
+{% block title %}data-list{% endblock title %}
+
+
+{% block page_content %}
+{{ super() }}
+
+
+<div class="container mt-5">
+  <div class="row" id="msg-bar" style="display: {{ 'block' if request.method=='POST' else 'none' }}">
+    <div class="alert {{ 'alert-primary' if status=='Success' else 'alert-danger'}} " role="alert">
+        {{ status }}
+    </div>
+</div>
+    <div class="row justify-content-md-center">
+        <div class="col-10">
+            <div class="card ">
+                <div class="card-body">
+                    <form method="POST" action="/pc_info/pcinfo_submit">
+
+                        <div class="mb-3">
+                            <label for="Applicant_ID" class="form-label">Applicant_ID</label>
+                            <!-- <input type="text" name="FirstName" class="form-control" id="FirstName"> -->
+                            <select class="form-select" name="Applicant_ID"  id="Applicant_ID" aria-label="Default select example">
+                                {% for id in id_list_member %}
+                                <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                          <label for="Purchaser_ID" class="form-label">Purchaser_ID</label>
+                          <!-- <input type="text" name="FirstName" class="form-control" id="FirstName"> -->
+                          <select class="form-select" name="Purchaser_ID"  id="Purchaser_ID" aria-label="Default select example">
+                              {% for id in id_list_member %}
+                              <option value="{{ id }}">{{ id }}</option>
+                              {% endfor %}
+                          </select>
+                      </div>
+                        <div class="mb-3">
+                            <label for="SubmitDate" class="form-label">SubmitDate</label>
+                            <!-- <input type="text" name="Date" class="form-control" id="Company"> -->
+                            <input id="date" type="date" name="SubmitDate" class="form-control" id="SubmitDate">
+
+                        </div>
+                        <div class="mb-3">
+                          <label for="AcceptDate" class="form-label">AcceptDate</label>
+                          <!-- <input type="text" name="Date" class="form-control" id="Company"> -->
+                          <input id="date" type="date" name="AcceptDate" class="form-control" id="AcceptDate">
+
+                        </div>
+                        <div class="mb-3">
+                          <label for="TransactionDate" class="form-label">TransactionDate</label>
+                          <!-- <input type="text" name="Date" class="form-control" id="Company"> -->
+                          <input id="date" type="date" name="TransactionDate" class="form-control" id="TransactionDate">
+
+                        </div>
+                        <div class="mb-3">
+                          <label for="DeliveryDate" class="form-label">DeliveryDate</label>
+                          <!-- <input type="text" name="Date" class="form-control" id="Company"> -->
+                          <input id="date" type="date" name="DeliveryDate" class="form-control" id="DeliveryDate">
+
+                        <div class="mb-3">
+                            <label for="SupplierID" class="form-label">Supplier_ID</label>
+                            <select class="form-select" name="SupplierID"  id="SupplierID" aria-label="Default select example">
+                                {% for id in sup_id_list %}
+                                <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul class="pagination  justify-content-center mt-5">
+    <li class="page-item">
+      <form action="/pc_info/pcinfo_submit">
+        <button class="btn btn-primary">建立採購清單資訊</button>
+      </form>
+    </li>
+  
+    
+  
+    <li class="page-item"></li>
+      <form action="/pc_info/pcinfo_edit">
+        <button class="btn btn-primary">修改採購清單資訊</button>
+      </form>
+    </li>
+
+    <li class="page-item"></li>
+      <form action="/pc_info/">
+        <button class="btn btn-primary">返回採購清單資訊首頁</button>
+      </form>
+    </li>
+    
+  </ul>
+{% endblock page_content %}

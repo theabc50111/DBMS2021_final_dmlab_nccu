@@ -22,7 +22,7 @@
                             <label for="Applicant_ID" class="form-label">Applicant_ID</label>
                             <!-- <input type="text" name="FirstName" class="form-control" id="FirstName"> -->
                             <select class="form-select" name="Applicant_ID"  id="Applicant_ID" aria-label="Default select example">
-                                {% for id in id_list %}
+                                {% for id in id_list_member %}
                                 <option value="{{ id }}">{{ id }}</option>
                                 {% endfor %}
                             </select>
@@ -31,7 +31,7 @@
                           <label for="Purchaser_ID" class="form-label">Purchaser_ID</label>
                           <!-- <input type="text" name="FirstName" class="form-control" id="FirstName"> -->
                           <select class="form-select" name="Purchaser_ID"  id="Purchaser_ID" aria-label="Default select example">
-                              {% for id in id_list %}
+                              {% for id in id_list_member %}
                               <option value="{{ id }}">{{ id }}</option>
                               {% endfor %}
                           </select>
@@ -60,7 +60,7 @@
                           <input id="date" type="date" name="DeliveryDate" class="form-control" id="DeliveryDate">
 
                         <div class="mb-3">
-                            <label for="SupplierID" class="form-label">Property_ID</label>
+                            <label for="SupplierID" class="form-label">Supplier_ID</label>
                             <select class="form-select" name="SupplierID"  id="SupplierID" aria-label="Default select example">
                                 {% for id in sup_id_list %}
                                 <option value="{{ id }}">{{ id }}</option>

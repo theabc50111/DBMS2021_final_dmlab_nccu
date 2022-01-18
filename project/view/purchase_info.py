@@ -109,6 +109,11 @@ def purchasing_edit_info():
     if request.method=="POST":
         try:
             connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+            query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
+            proxy = connection.execute(query)
+            id_list_member = [idx[0] for idx in proxy.fetchall()]
+
+
             query = db.select(table_PurchasingInfo.c.List_ID).order_by(table_PurchasingInfo.c.List_ID)
             proxy = connection.execute(query)
             id_list = [idx[0] for idx in proxy.fetchall()]
@@ -121,19 +126,22 @@ def purchasing_edit_info():
                 raise Exception
         except:
             return render_template('purchasinginfo_edit_info.html',
-                                    page_header="修改採購清單資訊",id_list=id_list,status="Failed")
+                                    page_header="修改採購清單資訊",id_list=id_list,id_list_member=id_list_member,status="Failed")
         else:
             return render_template('purchasinginfo_edit_info.html',
-                                    page_header="修改採購清單資訊",id_list=id_list,status="Success")
+                                    page_header="修改採購清單資訊",id_list=id_list,id_list_member=id_list_member,status="Success")
         finally:
             # Close connection
             connection.close()
            
     if request.method=="GET":
         connection  = engine.connect() 
+        query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
+        proxy = connection.execute(query)
+        id_list_member = [idx[0] for idx in proxy.fetchall()]
         query = db.select(table_PurchasingInfo.c.List_ID).order_by(table_PurchasingInfo.c.List_ID)
         proxy = connection.execute(query)
         id_list = [idx[0] for idx in proxy.fetchall()]
         connection.close()
         return render_template('purchasinginfo_edit_info.html',
-                                page_header="修改採購清單資訊",id_list=id_list)
+                                page_header="修改採購清單資訊",id_list=id_list,id_list_member=id_list_member)

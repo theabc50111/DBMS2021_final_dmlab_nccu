@@ -7,10 +7,13 @@
 
 
 <div class="container mt-5">
-    <div class="row" id="msg-bar" style="display: {{ 'block' if request.method=='POST' else 'none' }}">
+    <div class="row mb-5" id="msg-bar" style="display: {{ 'block' if request.method=='POST' else 'none' }}">
         <div class="alert {{ 'alert-primary' if status=='Success' else 'alert-danger'}} " role="alert">
             {{ status }}
         </div>
+        {% if status=='Success' %}
+            <a class="btn btn-primary btn-lg" href="/member/info">check the results</a>
+        {% endif %}
     </div>
     <div class="row justify-content-md-center">
         <div class="col-10">

@@ -47,12 +47,13 @@ def member_info_show():
     total_pages = math.ceil(proxy.fetchall()[0][0]/each_page) # [0][0] => inorder to get the value
 
     # fetch data & decided by page
-    query = db.select(table_members,table_occupation.c.Occupation).select_from(table_members.outerjoin(table_occupation)).limit(each_page).offset((page-1)*each_page)
+    sq = db.select(table_members).limit(each_page).offset((page-1)*each_page).subquery()
+    query = db.select(sq, table_occupation.c.Occupation).select_from(sq.outerjoin(table_occupation))
     proxy = connection.execute(query)
     sql_results = proxy.fetchall()
-
     tmp_df = pd.DataFrame(sql_results, columns=["Member_ID", 'Name', "Unit", "Occupation"])
-    results = pd.concat([tmp_df.drop(["Occupation"], axis=1), pd.get_dummies(tmp_df["Occupation"])], axis=1).groupby(["Member_ID", "Name", "Unit"]).sum().astype('bool').reset_index().to_dict(orient="records")
+    concat_df = pd.concat([tmp_df.drop(["Occupation"], axis=1), pd.get_dummies(tmp_df["Occupation"])], axis=1).groupby(["Member_ID", "Name", "Unit"]).sum().astype('bool').reset_index()
+    results = concat_df.to_dict(orient="records")
 
     # Close connection
     connection.close()
@@ -72,7 +73,7 @@ def member_edit_info():
             query = db.select(table_members.c.Member_ID).order_by(table_members.c.Member_ID)
             proxy = connection.execute(query)
             id_list = [idx[0] for idx in proxy.fetchall()]
-            if request.form['Name'] or request.form['Delete_member']: # 希望至少要填寫名子
+            if request.form['Name'] or ('Delete_member' in request.form): # 希望至少要填寫名子 或是 刪除會員
                 if 'Delete_member' in request.form:
                     query = db.delete(table_members).where(table_members.c.Member_ID == request.form['Member_ID'])
                     connection.execute(query)

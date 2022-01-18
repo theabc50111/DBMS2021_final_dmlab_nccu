@@ -275,8 +275,8 @@ def scrapping_delete_list():
         else:
             return render_template('scrapping_delete_list.html',
                     page_header="撤回未核准之報廢清單",
-                    total_pages=total_pages,id_list_Scrapping_list=id_list_Scrapping_list,
-                    outputs=results,status="Success")
+                    id_list_Scrapping_list=id_list_Scrapping_list,
+                    status="Success")
         finally:
             # Close connection
             connection.close()

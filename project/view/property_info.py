@@ -20,8 +20,10 @@ def init_app(app):
 
     # 登錄財物資料頁面
     @pp_info_app.route("/addproperty")
-    def addProperty():    
-        return render_template("addproperty.html")
+    def addProperty():   
+        item=db.session.execute("SELECT * FROM PurchasingList").fetchall()
+        member=db.session.execute("SELECT * FROM Member").fetchall()
+        return render_template("addproperty.html", books=item, books2=member)
 
     # 登錄財物資料 
     @pp_info_app.route("/propertyAdd", methods=["POST"])
@@ -48,8 +50,9 @@ def init_app(app):
     @pp_info_app.route("/transfer/<string:bookid>")
     def propertyTransfer(bookid):
         properties=db.session.execute("SELECT * FROM Property where Property_ID=:book_id",{"book_id":bookid}).fetchall()
+        member=db.session.execute("SELECT * FROM Member").fetchall()
         # display data in modify page passing the tuple as parameter in render_template method
-        return render_template("transferProperty.html",book=properties ) 
+        return render_template("transferProperty.html",book=properties , books2=member) 
 
 
     # 財物移轉
@@ -87,3 +90,28 @@ def init_app(app):
         
   
         return redirect(url_for('property_info_app.propertylist'))
+
+
+    # 財務移轉清單
+    @pp_info_app.route("/transferlist")
+    def transferList():
+        list=db.session.execute("SELECT * FROM TransferingList order by TransferingList_ID")
+        return render_template("transferlist.html", books=list)
+
+
+
+    # for deleting the 2nd entry, it's like: http://127.0.0.1:5000/bookDelete/2
+    @pp_info_app.route("/propertyListDelete/<string:bookid>")
+    def propertyListDelete(bookid):
+        # create delete query as string
+        #strSQL="delete from TransferingList where TransferingList_ID="+str(bookid)
+        # execute delete query
+        #db.session.execute(strSQL) 
+        # commit to database
+
+        db.session.execute("DELETE FROM TransferingList WHERE TransferingList_ID = :keeper",{"keeper":str(bookid)})
+        db.session.commit()
+        db.session.execute("DELETE FROM TransferingInfo WHERE TransferingList_ID = :keeper",{"keeper":str(bookid)})
+        db.session.commit() 
+        return redirect(url_for('property_info_app.transferList'))
+

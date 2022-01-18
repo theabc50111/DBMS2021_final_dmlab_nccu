@@ -1,0 +1,44 @@
+{% extends "parts/base.html" %}
+{% block title %}Transfer List{% endblock title %}
+
+{% block page_content %}
+{{ super() }}
+
+
+
+
+
+
+
+
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">TransferingList_ID</th>
+        <th scope="col">Property_ID</th>
+        <th scope="col">NewKeeper_ID</th>
+        <th scope="col">Action</th>
+    
+      </tr>
+    </thead>
+      {% for book in books %}
+      <tr>
+      <th scope="row">{{book.TransferingList_ID}}</th>
+      <td>{{book.Property_ID}}
+      </td>
+      <td>{{book.NewKeeper_ID}}
+      </td>
+
+      <td><b><a href="{{url_for('property_info_app.propertyListDelete', bookid=book.TransferingList_ID)}}">Delete</a></b>
+        </td>
+    
+
+      </tr>
+      {% endfor %}
+  </table>
+
+</body>
+</html>
+{% endblock page_content %}
+  

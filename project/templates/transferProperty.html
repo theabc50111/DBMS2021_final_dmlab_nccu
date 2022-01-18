@@ -19,13 +19,37 @@
     </div>
 
 
-    <div class="form-group">
+    <!--<div class="form-group">
         Applicant_ID<input class="form-control" type="text" name="applicant_id" placeholder="Applicant_ID">
-    </div>
+    </div>-->
 
     <div class="form-group">
+        <div class="input-group">
+            <!--<span class="input-group-addon">Please select</span>-->
+            Applicant_ID<select name="applicant_id" class="selectpicker form-control">
+                  {% for o in books2 %}
+                  <option value="{{ o.Member_ID }}">{{ o.Member_ID }}</option>
+                  {% endfor %}
+                </select>
+        </div>
+        <!--<button type="submit" class="btn btn-default">Go</button>-->
+      </div>
+
+    <!--<div class="form-group">
         PropertyManager_ID<input class="form-control" type="text" name="propertymanager_id" placeholder="PropertyManager_ID">
-    </div>
+    </div>-->
+
+    <div class="form-group">
+        <div class="input-group">
+            <!--<span class="input-group-addon">Please select</span>-->
+            PropertyManager_ID<select name="propertymanager_id" class="selectpicker form-control">
+                  {% for o in books2 %}
+                  <option value="{{ o.Member_ID }}">{{ o.Member_ID }}</option>
+                  {% endfor %}
+                </select>
+        </div>
+        <!--<button type="submit" class="btn btn-default">Go</button>-->
+      </div>
 
 
     <div class="form-group">
@@ -40,9 +64,24 @@
     <div class="form-group">
         ServiceLife<input class="form-control" type="text" name="servicelife" placeholder="ServiceLife" value={{bk[4]}} readonly>
     </div>
-    <div class="form-group">
+    <!--<div class="form-group">
        New Keeper_ID<input class="form-control" type="text" name="keeper_id" placeholder="Keeper_ID" value={{bk[5]}}>
-    </div>
+    </div>-->
+
+    <div class="form-group">
+        <div class="input-group">
+            <!--<span class="input-group-addon">Please select</span>-->
+            New Keeper_ID<select name="keeper_id" class="selectpicker form-control">
+                  {% for o in books2 %}
+                  <option value="{{ o.Member_ID }}">{{ o.Member_ID }}</option>
+                  {% endfor %}
+                </select>
+        </div>
+        <!--<button type="submit" class="btn btn-default">Go</button>-->
+      </div>
+
+
+
     <div class="form-group">
         StartDate<input class="form-control" type="text" name="startdate" placeholder="StartDate" value={{bk[6]}} readonly>
     </div>

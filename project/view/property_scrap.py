@@ -71,7 +71,7 @@ def Scrapping_submit():
             proxy = connection.execute(query)
             id_list_property = [idx[0] for idx in proxy.fetchall()]
 
-            if request.form['Date'] and request.form['Reason'] : # 希望至少要填寫名子
+            if request.form['Reason'] and request.form['Date']: # 希望至少要填寫名子
                 query = db.select(table_ScrappingInfo.c.ScrappingList_ID).select_from(table_ScrappingInfo).order_by(table_ScrappingInfo.c.ScrappingList_ID.desc())
                 proxy = connection.execute(query)
                 ScrappingList_ID_GENERATE = 'S'+str(int([idx[0] for idx in proxy.fetchall()][0].split('S')[1])+1)
@@ -241,5 +241,55 @@ def Scrapping_search():
         
         return render_template('scrapping_search.html',
                                 page_header="查詢報廢清單物品",
+                                id_list_Scrapping_list=id_list_Scrapping_list)
+    
+
+
+@pp_scrap_app.route('/Scrapping_delete_list', methods=["GET", "POST"])
+def scrapping_delete_list():
+    if request.method=="POST":
+        connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+        query = db.select(table_ScrappingList.c.ScrappingList_ID).order_by(table_ScrappingList.c.ScrappingList_ID)
+        proxy = connection.execute(query)
+        id_list_Scrapping_list = [idx[0] for idx in proxy.fetchall()]
+        try:
+
+
+            page = int(request.args.get('page') if request.args.get('page') else 1)
+            each_page = 30
+        
+ # set total pages
+   
+            sql=db.delete(table_ScrappingList).where(table_ScrappingList.c.ScrappingList_ID==request.form['ScrappingList_ID'])
+            proxy = connection.execute(sql)
+            sql=db.delete(table_ScrappingInfo).where(table_ScrappingInfo.c.ScrappingList_ID==request.form['ScrappingList_ID'])
+            proxy = connection.execute(sql)
+            proxy = connection.execute(sql)
+
+
+            connection.close()
+
+        except:
+            return render_template('scrapping_delete_list.html',
+                    page_header="撤回未核准之報廢清單",status="Failed",id_list_Scrapping_list=id_list_Scrapping_list)
+        else:
+            return render_template('scrapping_delete_list.html',
+                    page_header="撤回未核准之報廢清單",
+                    total_pages=total_pages,id_list_Scrapping_list=id_list_Scrapping_list,
+                    outputs=results,status="Success")
+        finally:
+            # Close connection
+            connection.close()
+
+    if request.method=="GET":
+
+        connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
+        query =  db.select(table_ScrappingList.c.ScrappingList_ID).order_by(table_ScrappingList.c.ScrappingList_ID)
+        proxy = connection.execute(query)
+        id_list_Scrapping_list = [idx[0] for idx in proxy.fetchall()]
+        connection.close()
+        
+        return render_template('scrapping_delete_list.html',
+                                page_header="撤回未核准之報廢清單",
                                 id_list_Scrapping_list=id_list_Scrapping_list)
     

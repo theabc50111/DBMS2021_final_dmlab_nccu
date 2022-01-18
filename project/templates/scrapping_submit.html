@@ -71,34 +71,45 @@
         </div>
     </div>
 </div>
-<ul class="pagination  justify-content-center mt-5">
-    <li class="page-item">
-      <form action="/pp_scrap/Scrapping_aspect">
-        <button class="btn btn-primary">核准財物報廢</button>
-      </form>
-    </li>
-  
-  
-  
-    <!-- <li class="page-item">
-      <form action="/pp_scrap/Scrapping_submit">
-        <button class="btn btn-primary">提交財物報廢清單</button>
-      </form>
-    </li>
-   -->
-    
-  
-    <li class="page-item"></li>
-      <form action="/pp_scrap/Scrapping_search">
-        <button class="btn btn-primary">查詢個別清單報廢之物品</button>
-      </form>
-    </li>
 
-    <li class="page-item"></li>
-      <form action="/pp_scrap/">
-        <button class="btn btn-primary">返回報廢功能首頁</button>
-      </form>
-    </li>
-    
-  </ul>
+
+ 
+<ul class="pagination  justify-content-center mt-5">
+  <li class="page-item">
+    <!-- <form action="/pp_scrap/Scrapping_submit">
+      <button class="btn btn-primary">提交財物報廢清單</button>
+    </form>
+  </li> -->
+
+  <li class="page-item">  
+    <form action="/pp_scrap/Scrapping_delete_list">
+      <button class="btn btn-primary">撤回未核准的報廢清單</button>
+    </form>
+  </li>
+
+
+  <li class="page-item">
+    <form action="/pp_scrap/Scrapping_aspect">
+      <button class="btn btn-primary">核准財物報廢</button>
+    </form>
+  </li>
+
+
+  <li class="page-item">
+    <form action="/pp_scrap/Scrapping_search">
+      <button class="btn btn-primary">查詢個別清單報廢之物品</button>
+    </form>
+  </li>
+
+
+  <li class="page-item">
+    <form action="/pp_scrap/">
+      <button class="btn btn-primary">返回報廢功能首頁</button>
+    </form>
+  </li>
+
+</ul>
+
+
+   
 {% endblock page_content %}

@@ -16,7 +16,7 @@
         <div class="col-10">
             <div class="card ">
                 <div class="card-body">
-                    <form method="POST" action="/pp_scrap/Scrapping_aspect">
+                    <form method="POST" action="/pp_scrap/Scrapping_search">
                         <div class="mb-3">
                             <label for="ScrappingList_ID" class="form-label">Scrapping List ID</label>
                             <!-- <input type="text" name="ScrappingList_ID" class="form-control" id="ScrappingList_ID"> -->
@@ -26,15 +26,7 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="PropertyManager_ID" class="form-label">PropertyManager_ID</label>
-                            <!-- <input type="text" name="FirstName" class="form-control" id="FirstName"> -->
-                            <select class="form-select" name="PropertyManager_ID"  id="PropertyManager_ID" aria-label="Default select example">
-                                {% for id in id_list %}
-                                <option value="{{ id }}">{{ id }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+
                         
 
 
@@ -47,6 +39,15 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
   
  
 <ul class="pagination  justify-content-center mt-5">
@@ -56,18 +57,18 @@
     </form>
   </li>
 
-  <li class="page-item">  
+  <!-- <li class="page-item">  
     <form action="/pp_scrap/Scrapping_delete_list">
       <button class="btn btn-primary">撤回未核准的報廢清單</button>
     </form>
-  </li>
+  </li> -->
 
 
-  <!-- <li class="page-item">
+  <li class="page-item">
     <form action="/pp_scrap/Scrapping_aspect">
       <button class="btn btn-primary">核准財物報廢</button>
     </form>
-  </li> -->
+  </li>
 
 
   <li class="page-item">

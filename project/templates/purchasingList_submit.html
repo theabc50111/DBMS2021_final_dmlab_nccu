@@ -7,16 +7,16 @@
 
 
 <div class="container mt-5">
-    <div class="row" id="msg-bar" style="display: {{ 'block' if request.method=='POST' else 'none' }}">
+    <div class="row" id="msg-bar" style="display: {{ 'none' if request.method=='GET' else 'block' }}">
         <div class="alert {{ 'alert-primary' if status=='Success' else 'alert-danger'}} " role="alert">
-            {{ status }}
+            {{ status }} <a>!  Your Item SN is : {{PurchasingList_SN_GENERATE}}</a>
         </div>
     </div>
     <div class="row justify-content-md-center">
         <div class="col-10">
             <div class="card ">
                 <div class="card-body">
-                    <form method="POST" action="/pc_build/purchasing_submit">
+                    <form method="POST" action="/pc_build/pclist_submit">
                         <div class="mb-3">
                             <label for="List_ID" class="form-label">List_ID</label>
                             <select class="form-select" name="List_ID"  id="List_ID" aria-label="Default select example">
@@ -25,21 +25,18 @@
                                 {% endfor %}
                             </select>
                         </div>
-                      <div class="mb-3">
-                          <label for="Item" class="form-label">Item</label>
-                          <textarea class="form-control" name="Item" id="Item" rows="1"></textarea>
-                      </div>
-
-                      <div class="mb-3">
-                        <label for="Specification" class="form-label">Specification</label>
-                        <textarea class="form-control" name="Specification" id="Specification" rows="1"></textarea>
-                    </div>
-
+                        <div class="mb-3">
+                            <label for="Item" class="form-label">Item</label>
+                            <input type="text" name="Item" class="form-control" id="Item">
+                        </div>
+                        <div class="mb-3">
+                            <label for="Specification" class="form-label">Specification</label>
+                            <input type="text" name="Specification" class="form-control" id="Specification">
+                        </div>
                         <div class="mb-3">
                             <label for="Amount" class="form-label">Amount</label>
-                            <textarea class="form-control" name="Amount" id="Amount" rows="1"></textarea>
+                            <input type="text" name="Amount" class="form-control" id="Amount">
                         </div>
-
 
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>

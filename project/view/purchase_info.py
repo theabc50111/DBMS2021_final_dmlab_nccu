@@ -5,6 +5,8 @@ from datetime import datetime
 import math
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
+import traceback
+import sys
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
@@ -61,29 +63,42 @@ def Purchasing_submit():
             connection  = engine.connect() 
             query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
             proxy = connection.execute(query)
-            id_list = [idx[0] for idx in proxy.fetchall()]
+            id_list_member = [idx[0] for idx in proxy.fetchall()]
 
             query = db.select(table_Supplier.c.Supplier_ID).order_by(table_Supplier.c.Supplier_ID)
             proxy = connection.execute(query)
             sup_id_list = [idx[0] for idx in proxy.fetchall()]
- 
 
-            if request.form['Applicant_ID']&request.form['Purchaser_ID']: 
+            query = db.select(table_PurchasingInfo.c.Purchaser_ID).order_by(table_PurchasingInfo.c.Purchaser_ID)
+            proxy = connection.execute(query)
+            pcer_id_list = [idx[0] for idx in proxy.fetchall()]
+
+
+            if request.form['Applicant_ID']: 
                 query = db.select(table_PurchasingInfo.c.List_ID).select_from(table_PurchasingInfo).order_by(table_PurchasingInfo.c.List_ID.desc())
                 proxy = connection.execute(query)
-                PurchasingList_ID_GENERATE = 'S'+str(int([idx[0] for idx in proxy.fetchall()][0].split('S')[1])+1)
+                PurchasingList_ID_GENERATE = 'P'+str(int([idx[0] for idx in proxy.fetchall()][0].split('P')[1])+1)
 
                 query = db.insert(table_PurchasingInfo).values(Applicant_ID=request.form['Applicant_ID'],List_ID = PurchasingList_ID_GENERATE,Purchaser_ID=request.form['Purchaser_ID'], AcceptDate=request.form['AcceptDate'],
-                                                            TransactionDate=request.form['TransactionDate'],DeliveryDate=request.form['DeliveryDate'],SubmitDate=request.form['SubmitDate'],Supplier_ID=None)
+                                                            TransactionDate=request.form['TransactionDate'],DeliveryDate=request.form['DeliveryDate'],SubmitDate=request.form['SubmitDate'],Supplier_ID=request.form['Supplier_ID'])
                 proxy = connection.execute(query)
             else:
                 raise Exception
-        except:
+        except Exception as e:
+            error_class = e.__class__.__name__ #取得錯誤類型
+            detail = e.args[0] if len(e.args)>=1 else "" #取得詳細內容
+            cl, exc, tb = sys.exc_info() #取得Call Stack
+            lastCallStack = traceback.extract_tb(tb)[-1] #取得Call Stack的最後一筆資料
+            fileName = lastCallStack[0] #取得發生的檔案名稱
+            lineNum = lastCallStack[1] #取得發生的行號
+            funcName = lastCallStack[2] #取得發生的函數名稱
+            errMsg = "File \"{}\", line {}, in {}: [{}] {}".format(fileName, lineNum, funcName, error_class, detail)
+            print(errMsg)
             return render_template('purchasinginfo_submit.html',
-                                    page_header="建立採購清單資訊",id_list=id_list,sup_id_list=sup_id_list,status="Failed")
+                                    page_header="建立採購清單資訊",id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list,status="Failed")
         else:
             return render_template('purchasinginfo_submit.html',
-                                    page_header="建立採購清單資訊",id_list=id_list,sup_id_list=sup_id_list,status="Success")
+                                    page_header="建立採購清單資訊",id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list,status="Success")
         finally:
             connection.close()
            
@@ -91,17 +106,20 @@ def Purchasing_submit():
         connection  = engine.connect() 
         query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
         proxy = connection.execute(query)
-        id_list = [idx[0] for idx in proxy.fetchall()]
+        id_list_member = [idx[0] for idx in proxy.fetchall()]
 
         query = db.select(table_Supplier.c.Supplier_ID).order_by(table_Supplier.c.Supplier_ID)
         proxy = connection.execute(query)
         sup_id_list = [idx[0] for idx in proxy.fetchall()]
-        
+
+        query = db.select(table_PurchasingInfo.c.Purchaser_ID).order_by(table_PurchasingInfo.c.Purchaser_ID)
+        proxy = connection.execute(query)
+        pcer_id_list = [idx[0] for idx in proxy.fetchall()]        
 
         connection.close()
 
         return render_template('purchasinginfo_submit.html',
-                                    page_header="建立採購清單資訊",id_list=id_list,sup_id_list=sup_id_list)
+                                    page_header="建立採購清單資訊",id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list)
 
 @pc_info_app.route('/pcinfo_edit', methods=["GET", "POST"])
 def purchasing_edit_info():
@@ -113,35 +131,62 @@ def purchasing_edit_info():
             proxy = connection.execute(query)
             id_list_member = [idx[0] for idx in proxy.fetchall()]
 
-
             query = db.select(table_PurchasingInfo.c.List_ID).order_by(table_PurchasingInfo.c.List_ID)
             proxy = connection.execute(query)
             id_list = [idx[0] for idx in proxy.fetchall()]
-            if request.form['Applicant_ID'] or request.form['Purchaser_ID']:
-                query = db.update(table_PurchasingInfo).values(AcceptDate=request.form['AcceptDate'],TransactionDate=request.form['TransactionDate'],
-                DeliveryDate=request.form['DeliveryDate'],SubmitDate=request.form['SubmitDate'],Supplier_ID=request.form['Supplier_ID'])
+
+            query = db.select(table_Supplier.c.Supplier_ID).order_by(table_Supplier.c.Supplier_ID)
+            proxy = connection.execute(query)
+            sup_id_list = [idx[0] for idx in proxy.fetchall()]
+
+            query = db.select(table_PurchasingInfo.c.Purchaser_ID).order_by(table_PurchasingInfo.c.Purchaser_ID)
+            proxy = connection.execute(query)
+            pcer_id_list = [idx[0] for idx in proxy.fetchall()]
+
+            if request.form['Applicant_ID']:
+                query = db.update(table_PurchasingInfo).where(table_PurchasingInfo.c.List_ID == request.form['List_ID']).values(Applicant_ID=request.form['Applicant_ID'],Purchaser_ID=request.form['Purchaser_ID'], AcceptDate=request.form['AcceptDate'],
+                                                            TransactionDate=request.form['TransactionDate'],DeliveryDate=request.form['DeliveryDate'],SubmitDate=request.form['SubmitDate'],Supplier_ID=request.form['Supplier_ID'])
                 proxy = connection.execute(query)
 
             else:
                 raise Exception
-        except:
+        except Exception as e:
+            error_class = e.__class__.__name__ #取得錯誤類型
+            detail = e.args[0] if len(e.args)>=1 else "" #取得詳細內容
+            cl, exc, tb = sys.exc_info() #取得Call Stack
+            lastCallStack = traceback.extract_tb(tb)[-1] #取得Call Stack的最後一筆資料
+            fileName = lastCallStack[0] #取得發生的檔案名稱
+            lineNum = lastCallStack[1] #取得發生的行號
+            funcName = lastCallStack[2] #取得發生的函數名稱
+            errMsg = "File \"{}\", line {}, in {}: [{}] {}".format(fileName, lineNum, funcName, error_class, detail)
+            print(errMsg)
             return render_template('purchasinginfo_edit_info.html',
-                                    page_header="修改採購清單資訊",id_list=id_list,id_list_member=id_list_member,status="Failed")
+                                    page_header="修改採購清單資訊",id_list=id_list,id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list,status="Failed")
         else:
             return render_template('purchasinginfo_edit_info.html',
-                                    page_header="修改採購清單資訊",id_list=id_list,id_list_member=id_list_member,status="Success")
+                                    page_header="修改採購清單資訊",id_list=id_list,id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list,status="Success")
         finally:
             # Close connection
             connection.close()
            
     if request.method=="GET":
-        connection  = engine.connect() 
+        connection  = engine.connect() # connection 要放在view function中，否則會出現thread error
         query = db.select(table_Member.c.Member_ID).order_by(table_Member.c.Member_ID)
         proxy = connection.execute(query)
         id_list_member = [idx[0] for idx in proxy.fetchall()]
+
         query = db.select(table_PurchasingInfo.c.List_ID).order_by(table_PurchasingInfo.c.List_ID)
         proxy = connection.execute(query)
         id_list = [idx[0] for idx in proxy.fetchall()]
+
+        query = db.select(table_Supplier.c.Supplier_ID).order_by(table_Supplier.c.Supplier_ID)
+        proxy = connection.execute(query)
+        sup_id_list = [idx[0] for idx in proxy.fetchall()]
+
+        query = db.select(table_PurchasingInfo.c.Purchaser_ID).order_by(table_PurchasingInfo.c.Purchaser_ID)
+        proxy = connection.execute(query)
+        pcer_id_list = [idx[0] for idx in proxy.fetchall()]
+
         connection.close()
         return render_template('purchasinginfo_edit_info.html',
-                                page_header="修改採購清單資訊",id_list=id_list,id_list_member=id_list_member)
+                                page_header="修改採購清單資訊",id_list=id_list,id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list)

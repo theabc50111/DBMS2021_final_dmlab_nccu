@@ -5,12 +5,14 @@ from datetime import datetime
 import math
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
+import traceback
+import sys
 
-@event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
+# @event.listens_for(Engine, "connect")
+# def set_sqlite_pragma(dbapi_connection, connection_record):
+#     cursor = dbapi_connection.cursor()
+#     cursor.execute("PRAGMA foreign_keys=ON")
+#     cursor.close()
     
 pc_build_app = Blueprint('purchase_build_app', __name__, url_prefix="/pc_build")
 
@@ -34,11 +36,11 @@ def index(): #show PurchasingList
     each_page = 30
 
     connection  = engine.connect() 
-    query = db.select(func.count()).select_from(table_PurchasingInfo)
+    query = db.select(func.count()).select_from(table_PurchasingList)
     proxy = connection.execute(query)
     total_pages = math.ceil(proxy.fetchall()[0][0]/each_page)
 
-    query = db.select(table_PurchasingInfo).limit(each_page).offset((page-1)*each_page)
+    query = db.select(table_PurchasingList).limit(each_page).offset((page-1)*each_page)
     proxy = connection.execute(query)
     results = proxy.fetchall()
     print(results[0].keys())
@@ -60,7 +62,7 @@ def Purchasing_submit():
     if request.method=="POST":
         try:
             connection  = engine.connect() 
-            query = db.select(table_PurchasingList.c.List_ID).order_by(table_PurchasingList.c.List_ID)
+            query = db.select(table_PurchasingInfo.c.List_ID).order_by(table_PurchasingInfo.c.List_ID)
             proxy = connection.execute(query)
             id_list = [idx[0] for idx in proxy.fetchall()]
 
@@ -77,12 +79,16 @@ def Purchasing_submit():
             # Item_Sn_list_bq = [idx[0] for idx in proxy.fetchall()]
   
 
-            if request.form['Item']&request.form['Specification']&request.form['Amount']: 
-                query = db.select(table_PurchasingList.c.List_ID).select_from(table_PurchasingList).order_by(table_PurchasingList.c.List_ID.desc())
+            if request.form['List_ID'] and request.form['Item'] and request.form['Specification'] and request.form['Amount']: 
+                query = db.select(table_PurchasingList.c.Sn).select_from(table_PurchasingList).order_by(table_PurchasingList.c.Sn.desc())
                 proxy = connection.execute(query)
-                PurchasingList_SN_GENERATE = 'S'+str(int([idx[0] for idx in proxy.fetchall()][0].split('S')[1])+1)
 
-                query = db.insert(table_PurchasingList).values(SN=PurchasingList_SN_GENERATE,Item=request.form['Item'],Specification=request.form['Specification'],Amount=request.form['Amount'])
+                sn_list = str(int([idx[0] for idx in proxy.fetchall()][0])+1)
+                l = 10 - len(sn_list)
+                sn_gen = '0' * l
+                PurchasingList_SN_GENERATE = sn_gen + sn_list
+
+                query = db.insert(table_PurchasingList).values(List_ID = request.form['List_ID'],Sn=PurchasingList_SN_GENERATE,Item=request.form['Item'],Specification=request.form['Specification'],Amount=request.form['Amount'])
                 proxy = connection.execute(query)
                 # query = db.insert(table_Distribution).values(PurchasedItem_Sn=PurchasingList_SN_GENERATE)
                 # proxy = connection.execute(query)
@@ -90,7 +96,16 @@ def Purchasing_submit():
                 # proxy = connection.execute(query)
             else:
                 raise Exception
-        except:
+        except Exception as e:
+            error_class = e.__class__.__name__ #取得錯誤類型
+            detail = e.args[0] if len(e.args)>=1 else "" #取得詳細內容
+            cl, exc, tb = sys.exc_info() #取得Call Stack
+            lastCallStack = traceback.extract_tb(tb)[-1] #取得Call Stack的最後一筆資料
+            fileName = lastCallStack[0] #取得發生的檔案名稱
+            lineNum = lastCallStack[1] #取得發生的行號
+            funcName = lastCallStack[2] #取得發生的函數名稱
+            errMsg = "File \"{}\", line {}, in {}: [{}] {}".format(fileName, lineNum, funcName, error_class, detail)
+            print(errMsg)
             return render_template('purchasingList_submit.html',
                                     page_header="建立採購物品清單",id_list=id_list,status="Failed",
                                     PurchasingList_SN_GENERATE=PurchasingList_SN_GENERATE)
@@ -105,7 +120,7 @@ def Purchasing_submit():
            
     if request.method=="GET":
         connection  = engine.connect() 
-        query = db.select(table_PurchasingList.c.List_ID).order_by(table_PurchasingList.c.List_ID)
+        query = db.select(table_PurchasingInfo.c.List_ID).order_by(table_PurchasingInfo.c.List_ID)
         proxy = connection.execute(query)
         id_list = [idx[0] for idx in proxy.fetchall()]
         # query = db.select(table_PurchasingList.c.SN).order_by(table_PurchasingList.c.SN)

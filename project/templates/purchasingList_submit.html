@@ -45,14 +45,19 @@
         </div>
     </div>
 </div>
+
 <ul class="pagination  justify-content-center mt-5">
-
-
-    <li class="page-item"></li>
+    <li class="page-item">
+      <form action="/pc_build/pclist_delete">
+        <button class="btn btn-primary">刪除採購物品清單</button>
+      </form>
+    </li>
+  
+    <li class="page-item">
       <form action="/pc_build/">
         <button class="btn btn-primary">返回採購清單首頁</button>
       </form>
     </li>
-    
+  
   </ul>
 {% endblock page_content %}

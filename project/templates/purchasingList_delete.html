@@ -1,0 +1,51 @@
+{% extends "parts/base.html" %}
+{% block title %}data-list{% endblock title %}
+
+
+{% block page_content %}
+{{ super() }}
+
+
+<div class="container mt-5">
+    <div class="row" id="msg-bar" style="display: {{ 'none' if request.method=='GET' else 'block' }}">
+        <div class="alert {{ 'alert-primary' if status=='Success' else 'alert-danger'}} " role="alert">
+            {{ status }}
+        </div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col-10">
+            <div class="card ">
+                <div class="card-body">
+                    <form method="POST" action="/pc_build/pclist_delete">
+                        <div class="mb-3">
+                            <label for="Sn" class="form-label">Item Sn</label>
+                            <select class="form-select" name="Sn"  id="Sn" aria-label="Default select example">
+                                {% for id in id_list %}
+                                <option value="{{ id }}">{{ id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="pagination  justify-content-center mt-5">
+  <li class="page-item">
+    <form action="/pc_build/pclist_submit">
+      <button class="btn btn-primary">建立採購清單資訊</button>
+    </form>
+  </li>
+
+  <li class="page-item">
+    <form action="/pc_build/">
+      <button class="btn btn-primary">返回採購清單首頁</button>
+    </form>
+  </li>
+
+</ul>
+{% endblock page_content %}

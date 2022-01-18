@@ -95,10 +95,12 @@ def Purchasing_submit():
             errMsg = "File \"{}\", line {}, in {}: [{}] {}".format(fileName, lineNum, funcName, error_class, detail)
             print(errMsg)
             return render_template('purchasinginfo_submit.html',
-                                    page_header="建立採購清單資訊",id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list,status="Failed")
+                                    page_header="建立採購清單資訊",id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list,status="Failed",
+                                    PurchasingList_ID_GENERATE=PurchasingList_ID_GENERATE)
         else:
             return render_template('purchasinginfo_submit.html',
-                                    page_header="建立採購清單資訊",id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list,status="Success")
+                                    page_header="建立採購清單資訊",id_list_member=id_list_member,sup_id_list=sup_id_list,pcer_id_list=pcer_id_list,status="Success",
+                                    PurchasingList_ID_GENERATE=PurchasingList_ID_GENERATE)
         finally:
             connection.close()
            

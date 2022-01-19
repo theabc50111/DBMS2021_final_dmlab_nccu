@@ -47,7 +47,7 @@ def index(): #show Purchasinginfo
 
     connection.close()
     
-    return render_template('Purchasinginfo_table.html',
+    return render_template('purchasinginfo_table.html',
                            page_header="所有申請之採購清單",
                            total_pages=total_pages,
                            outputs=results,
